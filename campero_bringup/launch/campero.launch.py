@@ -219,7 +219,7 @@ def launch_setup(context, *args, **kwargs):
         executable="cmd_mux_node",
         name="cmd_mux",
         parameters=[{"topics_type": command_message_type}],
-        remappings=[("~/out", "cmd_" + kinematic_type)],
+        remappings=[("~/out", "controller/cmd_" + kinematic_type)],
         output="screen",
     )
 
