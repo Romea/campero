@@ -37,6 +37,7 @@ def launch_setup(context, *args, **kwargs):
     robot_namespace = LaunchConfiguration("robot_namespace").perform(context)
     joystick_type = LaunchConfiguration("joystick_type").perform(context)
     launch_gazebo = LaunchConfiguration("launch_gazebo").perform(context)
+    urdf_description = LaunchConfiguration("urdf_description").perform(context)
 
     if robot_namespace:
         robot_description_name = "/" + robot_namespace + "/robot_description"
@@ -47,13 +48,12 @@ def launch_setup(context, *args, **kwargs):
         controller_manager_name = "/controller_manager"
         joints_prefix = ""
 
-    if robot_model == "rubber" :
+    if robot_model == "rubber":
         kinematic_type = "skid_steering"
         command_message_type = "romea_mobile_base_msgs/SkidSteeringCommand"
-    else :
+    else:
         kinematic_type = "omni_steering"
         command_message_type = "romea_mobile_base_msgs/OmniSteeringCommand"
-
 
     launch_gazebo = (mode == "simulation") and launch_gazebo
     use_sim_time = (mode == "simulation") or (mode == "replay")
@@ -84,14 +84,6 @@ def launch_setup(context, *args, **kwargs):
         + "/config/mobile_base_controller.yaml"
     )
 
-    xacro_file = (
-        get_package_share_directory("campero_description")
-        + "/urdf/campero_"
-        + robot_model
-        + ".urdf.xacro"
-    )
-
-
     command_message_priority = 100
 
     gazebo = IncludeLaunchDescription(
@@ -106,22 +98,7 @@ def launch_setup(context, *args, **kwargs):
         condition=IfCondition(str(launch_gazebo)),
     )
 
-    # Get URDF via xacro
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            xacro_file,
-            " prefix:=",
-            joints_prefix,
-            " mode:=",
-            mode,
-            " controller_conf_yaml_file:=",
-            controller_manager_yaml_file,
-        ]
-    )
-
-    robot_description = {"robot_description": robot_description_content}
+    robot_description = {"robot_description": urdf_description}
 
     robot_state_publisher = Node(
         package="robot_state_publisher",
@@ -157,9 +134,8 @@ def launch_setup(context, *args, **kwargs):
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[robot_description, controller_manager_yaml_file],
-         output="screen",
+        output="screen",
     )
-
 
     controller = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -174,11 +150,11 @@ def launch_setup(context, *args, **kwargs):
             ]
         ),
         launch_arguments={
-            "joints_prefix" : joints_prefix,
-            "controller_name" : "mobile_base_controller_"+robot_model,
-            "controller_manager_name" : controller_manager_name,
-            "base_description_yaml_filename" : base_description_yaml_file,
-            "base_controller_yaml_filename" : base_controller_yaml_file,
+            "joints_prefix": joints_prefix,
+            "controller_name": "mobile_base_controller_" + robot_model,
+            "controller_manager_name": controller_manager_name,
+            "base_description_yaml_filename": base_description_yaml_file,
+            "base_controller_yaml_filename": base_controller_yaml_file,
         }.items(),
         condition=LaunchConfigurationNotEquals("mode", "replay"),
     )
@@ -191,7 +167,6 @@ def launch_setup(context, *args, **kwargs):
         output="log",
     )
 
-
     teleop = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
@@ -199,7 +174,7 @@ def launch_setup(context, *args, **kwargs):
                     [
                         FindPackageShare("romea_teleop"),
                         "launch",
-                        kinematic_type+"_teleop.launch.py",
+                        kinematic_type + "_teleop.launch.py",
                     ]
                 )
             ]
@@ -209,9 +184,8 @@ def launch_setup(context, *args, **kwargs):
             "output_message_type": command_message_type,
             "output_message_priority": str(command_message_priority),
             "base_description_yaml_filename": base_description_yaml_file,
-        }.items()
+        }.items(),
     )
-
 
     cmd_mux = Node(
         condition=LaunchConfigurationNotEquals("mode", "replay"),
@@ -222,7 +196,6 @@ def launch_setup(context, *args, **kwargs):
         remappings=[("~/out", "controller/cmd_" + kinematic_type)],
         output="screen",
     )
-
 
     return [
         gazebo,
@@ -243,27 +216,21 @@ def launch_setup(context, *args, **kwargs):
     ]
 
 
-
-
 def generate_launch_description():
 
     declared_arguments = []
 
-    declared_arguments.append(DeclareLaunchArgument("mode", default_value="simulation"))
+    declared_arguments.append(DeclareLaunchArgument("mode"))
 
-    declared_arguments.append(DeclareLaunchArgument("robot_model", default_value="rubber"))
+    declared_arguments.append(DeclareLaunchArgument("robot_model"))
 
-    declared_arguments.append(
-        DeclareLaunchArgument("robot_namespace", default_value="campero")
-    )
+    declared_arguments.append(DeclareLaunchArgument("robot_namespace"))
 
-    declared_arguments.append(
-        DeclareLaunchArgument("joystick_type", default_value="xbox")
-    )
+    declared_arguments.append(DeclareLaunchArgument("joystick_type"))
 
-    declared_arguments.append(
-        DeclareLaunchArgument("launch_gazebo", default_value="True")
-    )
+    declared_arguments.append(DeclareLaunchArgument("launch_gazebo"))
+
+    declared_arguments.append(DeclareLaunchArgument("urdf_description"))
 
     return LaunchDescription(
         declared_arguments + [OpaqueFunction(function=launch_setup)]
