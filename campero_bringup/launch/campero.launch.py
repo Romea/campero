@@ -7,17 +7,12 @@ from launch.actions import (
     GroupAction,
 )
 from launch.conditions import (
-    IfCondition,
     LaunchConfigurationEquals,
     LaunchConfigurationNotEquals,
 )
 from launch.substitutions import (
-    Command,
-    FindExecutable,
     PathJoinSubstitution,
     LaunchConfiguration,
-    TextSubstitution,
-    PythonExpression,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
@@ -36,7 +31,6 @@ def launch_setup(context, *args, **kwargs):
     robot_model = LaunchConfiguration("robot_model").perform(context)
     robot_namespace = LaunchConfiguration("robot_namespace").perform(context)
     joystick_type = LaunchConfiguration("joystick_type").perform(context)
-    launch_gazebo = LaunchConfiguration("launch_gazebo").perform(context)
     urdf_description = LaunchConfiguration("urdf_description").perform(context)
 
     if robot_namespace:
@@ -55,7 +49,6 @@ def launch_setup(context, *args, **kwargs):
         kinematic_type = "omni_steering"
         command_message_type = "romea_mobile_base_msgs/OmniSteeringCommand"
 
-    launch_gazebo = (mode == "simulation") and launch_gazebo
     use_sim_time = (mode == "simulation") or (mode == "replay")
 
     base_description_yaml_file = (
@@ -85,18 +78,6 @@ def launch_setup(context, *args, **kwargs):
     )
 
     command_message_priority = 100
-
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [
-                PathJoinSubstitution(
-                    [FindPackageShare("gazebo_ros"), "launch", "gazebo.launch.py"]
-                )
-            ]
-        ),
-        launch_arguments={"verbose": "false"}.items(),
-        condition=IfCondition(str(launch_gazebo)),
-    )
 
     robot_description = {"robot_description": urdf_description}
 
@@ -159,14 +140,6 @@ def launch_setup(context, *args, **kwargs):
         condition=LaunchConfigurationNotEquals("mode", "replay"),
     )
 
-    joy = Node(
-        condition=LaunchConfigurationNotEquals("mode", "replay"),
-        package="joy",
-        executable="joy_node",
-        name="joy",
-        output="log",
-    )
-
     teleop = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
@@ -198,7 +171,6 @@ def launch_setup(context, *args, **kwargs):
     )
 
     return [
-        gazebo,
         campero_bridge,
         GroupAction(
             actions=[
@@ -208,7 +180,6 @@ def launch_setup(context, *args, **kwargs):
                 spawn_entity,
                 controller_manager,
                 controller,
-                joy,
                 teleop,
                 cmd_mux,
             ]
