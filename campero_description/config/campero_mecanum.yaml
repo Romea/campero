@@ -1,4 +1,5 @@
-kinematic: omni_steering
+# kinematic: omni_steering
+type: 4WMD
 geometry:
   axles_distance: 0.52
   front_axle:

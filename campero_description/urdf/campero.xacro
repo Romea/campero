@@ -68,8 +68,15 @@
       <xacro:property name="rear_wheel_mass" value="6.5" />
       <xacro:property name="chassis_height" value="${min(front_wheel_radius,rear_wheel_radius)}" />
 
-      <xacro:property name="simulation_hardware_plugin" value="romea_mobile_base_gazebo/GazeboSystemInterface4WD"/>
-      <xacro:property name="live_hardware_plugin" value="alpo_hardware/AlpoHardware"/>
+      <xacro:if value="${model == 'rubber'}">
+         <xacro:property name="simulation_hardware_plugin" value="romea_mobile_base_gazebo/GazeboSystemInterface4WD"/>
+         <xacro:property name="live_hardware_plugin" value="campero_hardware/CamperoHardware4WD"/>
+      </xacro:if>
+
+      <xacro:if value="${model == 'mecanum'}">
+         <xacro:property name="simulation_hardware_plugin" value="romea_mobile_base_gazebo/GazeboSystemInterface4WMD"/>
+         <xacro:property name="live_hardware_plugin" value="campero_hardware/CamperoHardware4WMD"/>
+      </xacro:if>
 
       <xacro:chassis>
         <visual>

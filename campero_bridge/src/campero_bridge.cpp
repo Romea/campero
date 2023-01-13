@@ -1,42 +1,46 @@
+// Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
+// Add license
+
 #include "campero_bridge.hpp"
 
-//joints:
-//  /$(robot)/imu/data: /campero/imu/data
-//  /$(robot)/gps/nmea_sentence: /campero/gps/nmea_sentence
-//  /$(robot)/vehicle_controller/odom: /campero/robotnik_base_control/odom
-//  /$(robot)/vehicle_controller/cmd_vel: /campero/robotnik_base_control/cmd_vel
-//  /$(robot)/front_laser/scan: /campero/front_laser/scan
-//  /$(robot)/rear_laser/scan: /campero/rear_laser/scan
-//  /$(robot)/joint_states: /campero/joint_states
-//joints_prefix:
-//  $(robot)/: campero_
+// joints:
+//   /$(robot)/imu/data: /campero/imu/data
+//   /$(robot)/gps/nmea_sentence: /campero/gps/nmea_sentence
+//   /$(robot)/vehicle_controller/odom: /campero/robotnik_base_control/odom
+//   /$(robot)/vehicle_controller/cmd_vel: /campero/robotnik_base_control/cmd_vel
+//   /$(robot)/front_laser/scan: /campero/front_laser/scan
+//   /$(robot)/rear_laser/scan: /campero/rear_laser/scan
+//   /$(robot)/joint_states: /campero/joint_states
+// joints_prefix:
+//   $(robot)/: campero_
 
-//base_footprint_joint_name : base_footprint_joint
-//front_left_wheel_spinning_joint_name: front_left_wheel_joint
-//front_right_wheel_spinning_joint_name: front_right_wheel_joint
-//rear_left_wheel_spinning_joint_name: back_left_wheel_joint
-//rear_right_wheel_spinning_joint_name: back_right_wheel_joint
+// base_footprint_joint_name : base_footprint_joint
+// front_left_wheel_spinning_joint_name: front_left_wheel_joint
+// front_right_wheel_spinning_joint_name: front_right_wheel_joint
+// rear_left_wheel_spinning_joint_name: back_left_wheel_joint
+// rear_right_wheel_spinning_joint_name: back_right_wheel_joint
 
-const std::string campero_odom_topic = "/campero/robotnik_base_control/odom";
-const std::string campero_cmd_vel_topic = "/campero/robotnik_base_control/cmd_vel";
-const std::string campero_joint_states_topic = "/campero/joint_states";
-const std::string campero_front_laser_scan_topic = "/campero/front_laser/scan";
-const std::string campero_rear_laser_scan_topic = "/campero/rear_laser/scan";
+const char campero_odom_topic[] = "/campero/robotnik_base_control/odom";
+const char campero_cmd_vel_topic[] = "/campero/robotnik_base_control/cmd_vel";
+const char campero_joint_states_topic[] = "/campero/joint_states";
+const char campero_front_laser_scan_topic[] = "/campero/front_laser/scan";
+const char campero_rear_laser_scan_topic[] = "/campero/rear_laser/scan";
 
-const std::string bridge_odom_topic = "/campero_bridge/vehicle_controller/odom";
-const std::string bridge_cmd_vel_topic = "/campero_bridge/vehicle_controller/cmd_steer";
-const std::string bridge_joint_states_topic = "/campero_bridge/vehicle_controller/joint_states";
-const std::string bridge_front_laser_scan_topic = "/campero_bridge/front_laser/scan";
-const std::string bridge_rear_laser_scan_topic = "/campero_bridge/rear_laser/scan";
+const char bridge_odom_topic[] = "/campero_bridge/vehicle_controller/odom";
+const char bridge_cmd_vel_topic[] = "/campero_bridge/vehicle_controller/cmd_steer";
+const char bridge_joint_states_topic[] = "/campero_bridge/vehicle_controller/joint_states";
+const char bridge_front_laser_scan_topic[] = "/campero_bridge/front_laser/scan";
+const char bridge_rear_laser_scan_topic[] = "/campero_bridge/rear_laser/scan";
 
-const rclcpp::QoS data_qos= rclcpp::SensorDataQoS().reliable();
-const rclcpp::QoS cmd_qos= rclcpp::QoS(rclcpp::KeepLast(1)).
-    best_effort().durability_volatile();
+const rclcpp::QoS data_qos = rclcpp::SensorDataQoS().reliable();
+const rclcpp::QoS cmd_qos = rclcpp::QoS(rclcpp::KeepLast(1)).
+  best_effort().durability_volatile();
 
 //-----------------------------------------------------------------------------
-CamperoBridge::CamperoBridge(Ros1NodePtr ros1_node_ptr,
-                             Ros2NodePtr ros2_node_ptr):
-  ros1_node_ptr_(ros1_node_ptr),
+CamperoBridge::CamperoBridge(
+  Ros1NodePtr ros1_node_ptr,
+  Ros2NodePtr ros2_node_ptr)
+: ros1_node_ptr_(ros1_node_ptr),
   ros2_node_ptr_(ros2_node_ptr)
 {
 }
@@ -67,9 +71,10 @@ void CamperoBridge::ros1_odometry_callback_(const Ros1OdomMsg::ConstPtr & ros1_m
   ros2_msg.pose.pose.orientation.z = ros1_msg->pose.pose.orientation.z;
   ros2_msg.pose.pose.orientation.w = ros1_msg->pose.pose.orientation.w;
 
-  std::copy( ros1_msg->pose.covariance.begin(),
-             ros1_msg->pose.covariance.end(),
-             ros2_msg.pose.covariance.begin());
+  std::copy(
+    ros1_msg->pose.covariance.begin(),
+    ros1_msg->pose.covariance.end(),
+    ros2_msg.pose.covariance.begin());
 
   ros2_msg.twist.twist.linear.x = ros1_msg->twist.twist.linear.x;
   ros2_msg.twist.twist.linear.y = ros1_msg->twist.twist.linear.y;
@@ -78,9 +83,10 @@ void CamperoBridge::ros1_odometry_callback_(const Ros1OdomMsg::ConstPtr & ros1_m
   ros2_msg.twist.twist.angular.y = ros1_msg->twist.twist.angular.y;
   ros2_msg.twist.twist.angular.z = ros1_msg->twist.twist.angular.z;
 
-  std::copy( ros1_msg->twist.covariance.begin(),
-             ros1_msg->twist.covariance.end(),
-             ros2_msg.twist.covariance.begin());
+  std::copy(
+    ros1_msg->twist.covariance.begin(),
+    ros1_msg->twist.covariance.end(),
+    ros2_msg.twist.covariance.begin());
 
   ros2_odom_pub_->publish(ros2_msg);
 }
@@ -108,26 +114,26 @@ void CamperoBridge::start()
 //-----------------------------------------------------------------------------
 void CamperoBridge::init_ros1_publisher_()
 {
-  ros1_cmd_vel_pub_ =  ros1_node_ptr_->
-      advertise<Ros1TwistMsg>(campero_cmd_vel_topic, 1);
+  ros1_cmd_vel_pub_ = ros1_node_ptr_->
+    advertise<Ros1TwistMsg>(campero_cmd_vel_topic, 1);
 }
 
 //-----------------------------------------------------------------------------
 void CamperoBridge::init_ros2_publishers_()
 {
   ros2_odom_pub_ = ros2_node_ptr_->
-      create_publisher<Ros2OdomMsg>(bridge_odom_topic, data_qos);
+    create_publisher<Ros2OdomMsg>(bridge_odom_topic, data_qos);
   ros2_joint_states_pub_ = ros2_node_ptr_->
-      create_publisher<Ros2JointStatesMsg>(bridge_joint_states_topic, data_qos);
+    create_publisher<Ros2JointStatesMsg>(bridge_joint_states_topic, data_qos);
 }
 
 //-----------------------------------------------------------------------------
 void CamperoBridge::init_ros1_subscriptions_()
 {
   ros1_joint_states_sub_ = ros1_node_ptr_->subscribe(
-        campero_joint_states_topic, 10, &CamperoBridge::ros1_joint_states_callback_,this);
+    campero_joint_states_topic, 10, &CamperoBridge::ros1_joint_states_callback_, this);
   ros1_odom_sub_ = ros1_node_ptr_->subscribe(
-        campero_odom_topic, 10, &CamperoBridge::ros1_odometry_callback_,this);
+    campero_odom_topic, 10, &CamperoBridge::ros1_odometry_callback_, this);
 }
 
 //-----------------------------------------------------------------------------
@@ -136,9 +142,10 @@ void CamperoBridge::init_ros2_subcription_()
   rclcpp::SubscriptionOptions options;
   options.ignore_local_publications = true;
 
-  auto callback = std::bind(&CamperoBridge::ros2_cmd_vel_callback_,
-                            this,std::placeholders::_1);
+  auto callback = std::bind(
+    &CamperoBridge::ros2_cmd_vel_callback_,
+    this, std::placeholders::_1);
 
   ros2_cmd_vel_sub_ = ros2_node_ptr_->create_subscription<Ros2TwistMsg>(
-        bridge_cmd_vel_topic, cmd_qos, callback,options);
+    bridge_cmd_vel_topic, cmd_qos, callback, options);
 }

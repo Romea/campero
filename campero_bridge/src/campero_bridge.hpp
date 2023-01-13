@@ -1,7 +1,8 @@
+// Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
+// Add license
 
-#include <iostream>
-#include <memory>
-#include <string>
+#ifndef CAMPERO_BRIDGE_HPP_
+#define CAMPERO_BRIDGE_HPP_
 
 // include ROS 1
 #include <ros/ros.h>
@@ -19,6 +20,10 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 
+// std
+#include <iostream>
+#include <memory>
+#include <string>
 
 using Ros1TwistMsg = geometry_msgs::Twist;
 using Ros2TwistMsg = geometry_msgs::msg::Twist;
@@ -33,14 +38,13 @@ using Ros2NodePtr = std::shared_ptr<rclcpp::Node>;
 class CamperoBridge
 {
 public:
-
-  CamperoBridge(Ros1NodePtr ros1_node_ptr,
-                Ros2NodePtr ros2_node_ptr);
+  CamperoBridge(
+    Ros1NodePtr ros1_node_ptr,
+    Ros2NodePtr ros2_node_ptr);
 
   void start();
 
 private:
-
   void init_ros1_publisher_();
   void init_ros2_publishers_();
   void init_ros1_subscriptions_();
@@ -52,7 +56,6 @@ private:
   void ros2_cmd_vel_callback_(const Ros2TwistMsg::SharedPtr ros2_msg);
 
 private:
-
   Ros1NodePtr ros1_node_ptr_;
   Ros2NodePtr ros2_node_ptr_;
 
@@ -63,11 +66,6 @@ private:
   rclcpp::Publisher<Ros2OdomMsg>::SharedPtr ros2_odom_pub_;
   rclcpp::Publisher<Ros2JointStatesMsg>::SharedPtr ros2_joint_states_pub_;
   rclcpp::Subscription<Ros2TwistMsg>::SharedPtr ros2_cmd_vel_sub_;
-
-
 };
 
-
-
-
-
+#endif  // CAMPERO_BRIDGE_HPP_

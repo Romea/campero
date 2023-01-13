@@ -1,4 +1,5 @@
-kinematic: skid_steering
+# kinematic: skid_steering
+type: 4WD
 geometry:
   axles_distance: 0.52
   front_axle:

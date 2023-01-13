@@ -1,3 +1,6 @@
+# Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
+# Add license
+
 from launch import LaunchDescription
 
 from launch.actions import (
@@ -6,17 +9,8 @@ from launch.actions import (
     OpaqueFunction,
     GroupAction,
 )
-from launch.conditions import (
-    LaunchConfigurationEquals,
-    LaunchConfigurationNotEquals,
-)
-
-from launch.substitutions import (
-    PathJoinSubstitution,
-    LaunchConfiguration,
-    Command,
-)
-
+from launch.conditions import LaunchConfigurationEquals, LaunchConfigurationNotEquals
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Command
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node, SetParameter, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare, ExecutableInPackage
