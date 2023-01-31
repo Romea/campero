@@ -2,7 +2,7 @@
 // Add license
 
 #include "campero_hardware/campero_hardware4WD.hpp"
-#include <romea_core_mobile_base/kinematic/skid_steering/SkidSteeringKinematic.hpp>
+#include "romea_core_mobile_base/kinematic/skid_steering/SkidSteeringKinematic.hpp"
 
 namespace
 {

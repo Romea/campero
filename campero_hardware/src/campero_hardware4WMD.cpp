@@ -2,7 +2,7 @@
 // Add license
 
 #include "campero_hardware/campero_hardware4WMD.hpp"
-#include <romea_core_mobile_base/kinematic/omni_steering/MecanumWheelSteeringKinematic.hpp>
+#include "romea_core_mobile_base/kinematic/omni_steering/MecanumWheelSteeringKinematic.hpp"
 
 namespace
 {
