@@ -134,7 +134,13 @@ void CamperoHardwareBase::send_null_command_()
 }
 
 //-----------------------------------------------------------------------------
+#if ROS_DISTRO == ROS_GALACTIC
 hardware_interface::return_type CamperoHardwareBase::read()
+#else
+hardware_interface::return_type CamperoHardwareBase::read(
+  const rclcpp::Time & time,
+  const rclcpp::Duration & period)
+#endif
 {
   //    RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Read data from robot");
   rclcpp::spin_some(node_);
@@ -153,7 +159,13 @@ hardware_interface::return_type CamperoHardwareBase::read()
 
 
 //-----------------------------------------------------------------------------
+#if ROS_DISTRO == ROS_GALACTIC
 hardware_interface::return_type CamperoHardwareBase::write()
+#else
+hardware_interface::return_type CamperoHardwareBase::write(
+  const rclcpp::Time & time,
+  const rclcpp::Duration & period)
+#endif
 {
   //  RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Send command to robot");
   send_command_();

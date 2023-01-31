@@ -4,18 +4,19 @@
 #ifndef CAMPERO_HARDWARE__CAMPERO_HARDWARE_BASE_HPP_
 #define CAMPERO_HARDWARE__CAMPERO_HARDWARE_BASE_HPP_
 
-// romea
-#include <romea_mobile_base_hardware/hardware_system_interface.hpp>
-
-// ros2
-#include <rclcpp/macros.hpp>
-#include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/joint_state.hpp>
-#include <geometry_msgs/msg/twist.hpp>
-
 // std
 #include <atomic>
 #include <fstream>
+
+// ros2
+#include "rclcpp/macros.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+
+// romea
+#include "romea_common_utils/ros_versions.hpp"
+#include "romea_mobile_base_hardware/hardware_system_interface.hpp"
 
 namespace romea
 {
@@ -29,9 +30,19 @@ public:
 
   virtual ~CamperoHardwareBase() = default;
 
-  hardware_interface::return_type read() override;
+#if ROS_DISTRO == ROS_GALACTIC
+  hardware_interface::return_type read()override;
 
-  hardware_interface::return_type write() override;
+  hardware_interface::return_type write()override;
+#else
+  hardware_interface::return_type read(
+    const rclcpp::Time & time,
+    const rclcpp::Duration & period)override;
+
+  hardware_interface::return_type write(
+    const rclcpp::Time & time,
+    const rclcpp::Duration & period)override;
+#endif
 
 protected:
   hardware_interface::return_type connect_() override;
