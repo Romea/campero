@@ -1,14 +1,14 @@
 // Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
 // Add license
 
-#include "campero_bridge.hpp"
-
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <arpa/inet.h>
 
 #include <memory>
 #include <string>
+
+#include "campero_bridge.hpp"
 
 namespace
 {
