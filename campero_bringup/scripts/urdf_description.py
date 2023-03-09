@@ -5,7 +5,7 @@
 
 
 from campero_bringup import urdf_description
-from romea_common_bringup import robot_urdf_prefix
+from romea_common_bringup import robot_urdf_prefix, robot_namespace
 
 import sys
 
@@ -21,4 +21,5 @@ if __name__ == "__main__":
     mode = parameters["mode"]
     robot_model = parameters["robot_model"]
     prefix = robot_urdf_prefix(parameters["robot_namespace"])
-    print(urdf_description(prefix, mode, robot_model))
+    ros_namespace = robot_namespace(parameters["robot_namespace"])
+    print(urdf_description(prefix, mode, robot_model, ros_namespace))
