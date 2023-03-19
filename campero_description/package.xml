@@ -11,11 +11,11 @@
   <license>TODO</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <depend>romea_mobile_base_description</depend>
 
-<!--  <exec_depend>joint_state_publisher_gui</exec_depend>-->
-<!--  <exec_depend>robot_state_publisher</exec_depend>-->
-<!--  <exec_depend>rviz2</exec_depend>-->
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  <depend>ament_index_python</depend>
+  <depend>xacro</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
