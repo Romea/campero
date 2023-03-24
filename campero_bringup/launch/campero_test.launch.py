@@ -63,7 +63,7 @@ def launch_setup(context, *args, **kwargs):
 
     actions.append(PushRosNamespace("campero"))
 
-    teleop_configuration_filename = (
+    teleop_configuration_file_path = (
         get_package_share_directory("campero_description")
         + "/config/teleop_"
         + robot_model
@@ -81,7 +81,7 @@ def launch_setup(context, *args, **kwargs):
                 "robot_model": robot_model,
                 "joystick_type": joystick_type,
                 "joystick_driver": "joy",
-                "teleop_configuration_filename": teleop_configuration_filename,
+                "teleop_configuration_file_path": teleop_configuration_file_path,
             }.items(),
         )
     )
