@@ -13,12 +13,11 @@
 # limitations under the License.
 
 
-
 from ament_index_python.packages import get_package_share_directory
 import campero_description
 
 
-def urdf_description(prefix, mode, model, ros_namespace):
+def urdf_description(prefix, mode, model, ros_prefix):
 
     controller_manager_yaml_file = (
         get_package_share_directory("campero_bringup")
@@ -30,5 +29,4 @@ def urdf_description(prefix, mode, model, ros_namespace):
         mode,
         model,
         controller_manager_yaml_file,
-        ros_namespace
-    )
+        ros_prefix)

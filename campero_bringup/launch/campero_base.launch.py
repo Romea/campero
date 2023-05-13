@@ -38,11 +38,11 @@ def launch_setup(context, *args, **kwargs):
 
     if robot_namespace:
         robot_description_name = "/" + robot_namespace + "/robot_description"
-        controller_manager_name = "/" + robot_namespace + "/controller_manager"
+        controller_manager_name = "/" + robot_namespace + "/base/controller_manager"
         joints_prefix = robot_namespace + "_"
     else:
         robot_description_name = "/robot_description"
-        controller_manager_name = "/controller_manager"
+        controller_manager_name = "/base/controller_manager"
         joints_prefix = ""
 
     if robot_model == "rubber":
@@ -111,6 +111,7 @@ def launch_setup(context, *args, **kwargs):
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[robot_description, controller_manager_yaml_file],
+        namespace="base",
         # output="screen",
     )
 
@@ -143,6 +144,7 @@ def launch_setup(context, *args, **kwargs):
         name="cmd_mux",
         parameters=[{"topics_type": command_message_type}],
         remappings=[("~/out", "controller/cmd_" + kinematic_type)],
+        namespace="base",
         output="screen",
     )
 
