@@ -18,7 +18,28 @@ import xacro
 from ament_index_python.packages import get_package_share_directory
 
 
-def urdf(prefix, mode, robot_model, controller_conf_yaml_file, ros_prefix):
+def urdf(prefix, mode, base_name, robot_model, controller_manager_config_yaml_file, ros_prefix):
+
+    ros2_control_xacro_file = (
+        get_package_share_directory("campero_description")
+        + "/urdf/ros2_control/campero_"
+        + robot_model
+        + ".ros2_control.urdf.xacro"
+    )
+
+    ros2_control_urdf_xml = xacro.process_file(
+        ros2_control_xacro_file,
+        mappings={
+            "prefix": prefix,
+            "mode": mode,
+            "base_name": base_name,
+        },
+    )
+
+    ros2_control_config_urdf_file = "/tmp/"+prefix+base_name+"_ros2_control.urdf"
+
+    with open(ros2_control_config_urdf_file, "w") as f:
+        f.write(ros2_control_urdf_xml.toprettyxml())
 
     xacro_file = (
         get_package_share_directory("campero_description")
@@ -27,14 +48,16 @@ def urdf(prefix, mode, robot_model, controller_conf_yaml_file, ros_prefix):
         + ".urdf.xacro"
     )
 
-    urdf_xml = xacro.process_file(
+    base_urdf_xml = xacro.process_file(
         xacro_file,
         mappings={
             "prefix": prefix,
             "mode": mode,
-            "controller_conf_yaml_file": controller_conf_yaml_file,
+            "base_name": base_name,
+            "controller_manager_config_yaml_file": controller_manager_config_yaml_file,
+            "ros2_control_config_urdf_file": ros2_control_config_urdf_file,
             "ros_prefix": ros_prefix
         },
     )
 
-    return urdf_xml.toprettyxml()
+    return base_urdf_xml.toprettyxml()

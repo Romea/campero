@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<robot name="campero" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="campero_ros2_control" params="model mode prefix base_name">
+
+    <xacro:include
+      filename="$(find romea_mobile_base_description)/ros2_control/base4WD.ros2_control.xacro" />
+
+    <xacro:property name="conf" value="$(find campero_description)/config/campero_${model}.yaml" />
+    <xacro:property name="props" value="${load_yaml(conf)}" />
+
+
+    <!-- Joint names -->
+    <xacro:property name="front_left_wheel_spinning_joint"
+      value="${props['joints']['front_left_wheel_spinning_joint_name']}" />
+    <xacro:property name="front_right_wheel_spinning_joint"
+      value="${props['joints']['front_right_wheel_spinning_joint_name']}" />
+    <xacro:property name="rear_left_wheel_spinning_joint"
+      value="${props['joints']['rear_left_wheel_spinning_joint_name']}" />
+    <xacro:property name="rear_right_wheel_spinning_joint"
+      value="${props['joints']['rear_right_wheel_spinning_joint_name']}" />
+
+    <!-- Geometry -->
+    <xacro:property name="front_wheel_radius"
+      value="${props['geometry']['front_axle']['wheels']['radius']}" />
+    <xacro:property name="rear_wheel_radius"
+      value="${props['geometry']['rear_axle']['wheels']['radius']}" />
+
+
+    <!-- simulation plugins -->
+    <xacro:if value="${model == 'rubber'}">
+      <xacro:property name="simulation_hardware_plugin"
+        value="romea_mobile_base_gazebo/GazeboSystemInterface4WD" />
+      <xacro:property name="live_hardware_plugin"
+        value="campero_hardware/CamperoHardware4WD" />
+    </xacro:if>
+
+    <xacro:if value="${model == 'mecanum'}">
+      <xacro:property name="simulation_hardware_plugin"
+        value="romea_mobile_base_gazebo/GazeboSystemInterface4WMD" />
+      <xacro:property name="live_hardware_plugin"
+        value="campero_hardware/CamperoHardware4WMD" />
+    </xacro:if>
+
+    <xacro:base_control mode="${mode}" base_name="${base_name}" />
+
+  </xacro:macro>
+
+</robot>

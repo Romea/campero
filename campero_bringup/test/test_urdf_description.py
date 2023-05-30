@@ -29,10 +29,15 @@ def urdf_xml(mode, model):
 
     return ET.fromstring(
         subprocess.check_output(
-            [exe, "mode:" + mode, "robot_model:" + model, "robot_namespace:robot"],
+            [exe, "mode:" + mode, "base_name:base", "robot_model:" + model, "robot_namespace:robot"],
             encoding="utf-8",
         )
     )
+
+
+def ros2_control_urdf_xml(mode, model):
+    urdf_xml(mode, model)
+    return ET.parse("/tmp/robot_base_ros2_control.urdf")
 
 
 def test_footprint_link_name():
@@ -41,7 +46,7 @@ def test_footprint_link_name():
 
 def test_hardware_plugin_name():
 
-    assert urdf_xml("live", "rubber").find(
+    assert ros2_control_urdf_xml("live", "rubber").find(
         "ros2_control/hardware/plugin"
     ).text == "campero_hardware/CamperoHardware4WD"
 
@@ -49,7 +54,7 @@ def test_hardware_plugin_name():
     #     "ros2_control/hardware/plugin"
     # ).text == "campero_hardware/CamperoHardware4WMD"
 
-    assert urdf_xml("simulation", "rubber").find(
+    assert ros2_control_urdf_xml("simulation", "rubber").find(
         "ros2_control/hardware/plugin"
     ).text == "romea_mobile_base_gazebo/GazeboSystemInterface4WD"
 
@@ -60,7 +65,6 @@ def test_hardware_plugin_name():
 
 def test_controller_filename_name():
     assert (
-        urdf_xml("simulation", "rubber").find("gazebo/plugin/parameters").text
-        == get_package_share_directory("campero_bringup")
-        + "/config/controller_manager.yaml"
+        urdf_xml("simulation", "rubber").find("gazebo/plugin/controller_manager_config_file").text
+        == get_package_share_directory("campero_bringup") + "/config/controller_manager.yaml"
     )

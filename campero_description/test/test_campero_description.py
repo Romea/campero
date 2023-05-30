@@ -21,9 +21,16 @@ from campero_description import urdf
 def urdf_xml(mode, model):
     prefix = "robot_"
     ros_prefix = "/robot/"
+    base_name = "base"
     controller_conf_yaml_file = mode + "_" + model + "_controller.yaml"
     # print(urdf(prefix, mode, model, controller_conf_yaml_file))
-    return ET.fromstring(urdf(prefix, mode, model, controller_conf_yaml_file, ros_prefix))
+    return ET.fromstring(
+        urdf(prefix, mode, base_name, model, controller_conf_yaml_file, ros_prefix))
+
+
+def ros2_control_urdf_xml(mode, model):
+    urdf_xml(mode, model)
+    return ET.parse("/tmp/robot_base_ros2_control.urdf")
 
 
 def test_footprint_link_name():
@@ -32,7 +39,7 @@ def test_footprint_link_name():
 
 def test_hardware_plugin_name():
 
-    assert urdf_xml("live", "rubber").find(
+    assert ros2_control_urdf_xml("live", "rubber").find(
         "ros2_control/hardware/plugin"
     ).text == "campero_hardware/CamperoHardware4WD"
 
@@ -40,7 +47,7 @@ def test_hardware_plugin_name():
     #     "ros2_control/hardware/plugin"
     # ).text == "campero_hardware/CamperoHardware4WMD"
 
-    assert urdf_xml("simulation", "rubber").find(
+    assert ros2_control_urdf_xml("simulation", "rubber").find(
         "ros2_control/hardware/plugin"
     ).text == "romea_mobile_base_gazebo/GazeboSystemInterface4WD"
 
@@ -51,6 +58,6 @@ def test_hardware_plugin_name():
 
 def test_controller_filename_name():
     assert (
-        urdf_xml("simulation", "rubber").find("gazebo/plugin/parameters").text
+        urdf_xml("simulation", "rubber").find("gazebo/plugin/controller_manager_config_file").text
         == "simulation_rubber_controller.yaml"
     )
