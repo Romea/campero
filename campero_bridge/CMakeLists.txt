@@ -36,11 +36,11 @@ if(${ROS_VERSION} EQUAL 1)
     find_ros1_package(geometry_msgs)
     find_ros1_package(nav_msgs)
 
-    add_executable(${PROJECT_NAME}
+    add_executable(${PROJECT_NAME}_node
       src/campero_bridge_node.cpp
       src/campero_bridge.cpp)
 
-    ament_target_dependencies(${PROJECT_NAME}
+    ament_target_dependencies(${PROJECT_NAME}_node
       rclcpp
       std_msgs
       sensor_msgs
@@ -53,7 +53,11 @@ if(${ROS_VERSION} EQUAL 1)
     )
 
     install(TARGETS
-      ${PROJECT_NAME}
+      ${PROJECT_NAME}_node
+      DESTINATION lib/${PROJECT_NAME}_node)
+    
+    install(PROGRAMS
+      scripts/campero_bridge
       DESTINATION lib/${PROJECT_NAME})
 
     ament_package()
