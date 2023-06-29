@@ -180,6 +180,7 @@ hardware_interface::return_type CamperoHardwareBase::write(
 #endif
 {
   //  RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Send command to robot");
+  get_hardware_command_();
   send_command_();
   return hardware_interface::return_type::OK;
 }
