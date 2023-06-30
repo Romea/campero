@@ -26,6 +26,9 @@
     <xacro:property name="rear_wheel_radius"
       value="${props['geometry']['rear_axle']['wheels']['radius']}" />
 
+    <xacro:property name="maximal_wheel_speed"
+      value="${props['wheels_speed_control']['command']['maximal_speed']}" />
+
 
     <!-- simulation plugins -->
     <xacro:if value="${model == 'rubber'}">
