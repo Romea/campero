@@ -135,11 +135,10 @@ def launch_setup(context, *args, **kwargs):
 
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource(
-                        get_package_share_directory("romea_teleop_drivers")
-                        + "/launch/teleop.launch.py"
+                        get_package_share_directory("campero_bringup")
+                        + "/launch/campero_teleop.launch.py"
                     ),
                     launch_arguments={
-                        "robot_type": "campero",
                         "robot_model": robot_model,
                         "joystick_type": joystick_type,
                         "joystick_driver": "joy",
