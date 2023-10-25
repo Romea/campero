@@ -6,9 +6,9 @@ if($ENV{ROS_VERSION})
     set(ROS_VERSION $ENV{ROS_VERSION})
 endif()
 
-message(campero_bridge1)
+# message(campero_bridge1)
 if(${ROS_VERSION} EQUAL 1)
-    message(campero_bridge2)
+    # message(campero_bridge2)
 
     # Default to C++14
     if(NOT CMAKE_CXX_STANDARD)
