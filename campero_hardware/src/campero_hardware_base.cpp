@@ -150,8 +150,8 @@ void CamperoHardwareBase::send_null_command_()
 hardware_interface::return_type CamperoHardwareBase::read()
 #else
 hardware_interface::return_type CamperoHardwareBase::read(
-  const rclcpp::Time & time,
-  const rclcpp::Duration & period)
+  const rclcpp::Time & /*time*/,
+  const rclcpp::Duration & /*period*/)
 #endif
 {
   //    RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Read data from robot");
@@ -175,8 +175,8 @@ hardware_interface::return_type CamperoHardwareBase::read(
 hardware_interface::return_type CamperoHardwareBase::write()
 #else
 hardware_interface::return_type CamperoHardwareBase::write(
-  const rclcpp::Time & time,
-  const rclcpp::Duration & period)
+  const rclcpp::Time & /*time*/,
+  const rclcpp::Duration & /*period*/)
 #endif
 {
   //  RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Send command to robot");
