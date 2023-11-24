@@ -61,6 +61,8 @@ const double & velocity(
 
 namespace romea
 {
+namespace ros2
+{
 
 //-----------------------------------------------------------------------------
 CamperoHardwareBase::CamperoHardwareBase()
@@ -202,7 +204,7 @@ void CamperoHardwareBase::joint_states_callback_(
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::set_hardware_state_()
 {
-  HardwareState4WD state;
+  core::HardwareState4WD state;
   state.frontLeftWheelSpinningMotion.velocity = front_left_wheel_angular_speed_measure_;
   state.frontRightWheelSpinningMotion.velocity = front_right_wheel_angular_speed_measure_;
   state.rearLeftWheelSpinningMotion.velocity = front_left_wheel_angular_speed_measure_;
@@ -213,7 +215,7 @@ void CamperoHardwareBase::set_hardware_state_()
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::get_hardware_command_()
 {
-  HardwareCommand4WD command = hardware_interface_->get_command();
+  core::HardwareCommand4WD command = hardware_interface_->get_command();
   front_left_wheel_angular_speed_command_ = command.frontLeftWheelSpinningSetPoint;
   front_right_wheel_angular_speed_command_ = command.frontRightWheelSpinningSetPoint;
   rear_left_wheel_angular_speed_command_ = command.rearLeftWheelSpinningSetPoint;
@@ -261,4 +263,5 @@ void CamperoHardwareBase::write_log_data_()
 }
 #endif
 
+}  // namespace ros2
 }  // namespace romea

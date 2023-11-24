@@ -21,6 +21,8 @@
 
 namespace romea
 {
+namespace ros2
+{
 
 class CamperoHardware4WMD : public CamperoHardwareBase
 {
@@ -33,6 +35,7 @@ private:
   virtual void send_command_();
 };
 
+}  // namespace ros2
 }  // namespace romea
 
 #endif  // CAMPERO_HARDWARE__CAMPERO_HARDWARE4WMD_HPP_

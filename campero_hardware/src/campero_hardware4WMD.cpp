@@ -23,6 +23,8 @@ namespace
 
 namespace romea
 {
+namespace ros2
+{
 
 //-----------------------------------------------------------------------------
 CamperoHardware4WMD::CamperoHardware4WMD()
@@ -35,21 +37,21 @@ void CamperoHardware4WMD::send_command_()
 {
   geometry_msgs::msg::Twist cmd;
 
-  cmd.linear.x = MecanumWheelSteeringKinematic::
+  cmd.linear.x = core::MecanumWheelSteeringKinematic::
     computeLongitudinalSpeed(
     front_left_wheel_angular_speed_command_,
     front_right_wheel_angular_speed_command_,
     rear_left_wheel_angular_speed_command_,
     rear_right_wheel_angular_speed_command_);
 
-  cmd.linear.y = MecanumWheelSteeringKinematic::
+  cmd.linear.y = core::MecanumWheelSteeringKinematic::
     computeLateralSpeed(
     front_left_wheel_angular_speed_command_,
     front_right_wheel_angular_speed_command_,
     rear_left_wheel_angular_speed_command_,
     rear_right_wheel_angular_speed_command_);
 
-  cmd.angular.z = MecanumWheelSteeringKinematic::
+  cmd.angular.z = core::MecanumWheelSteeringKinematic::
     computeAngularSpeed(
     front_left_wheel_angular_speed_command_,
     front_right_wheel_angular_speed_command_,
@@ -61,7 +63,8 @@ void CamperoHardware4WMD::send_command_()
   cmd_vel_pub_->publish(cmd);
 }
 
+}  // namespace ros2
 }  // namespace romea
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(romea::CamperoHardware4WMD, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(romea::ros2::CamperoHardware4WMD, hardware_interface::SystemInterface)

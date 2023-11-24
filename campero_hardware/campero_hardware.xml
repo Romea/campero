@@ -1,7 +1,7 @@
 <library path="campero_hardware">
 
   <class name="campero_hardware/CamperoHardware4WD"
-         type="romea::CamperoHardware4WD"
+         type="romea::ros2::CamperoHardware4WD"
          base_class_type="hardware_interface::SystemInterface">
     <description>
       Hardware interface for campero robots
@@ -9,7 +9,7 @@
   </class>
 
   <class name="campero_hardware/CamperoHardware4WMD"
-         type="romea::CamperoHardware4WMD"
+         type="romea::ros2::CamperoHardware4WMD"
          base_class_type="hardware_interface::SystemInterface">
     <description>
       Hardware interface for campero robots

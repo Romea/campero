@@ -32,6 +32,8 @@
 
 namespace romea
 {
+namespace ros2
+{
 
 class CamperoHardwareBase : public HardwareSystemInterface<HardwareInterface4WD>
 {
@@ -107,6 +109,7 @@ protected:
 #endif
 };
 
+}  // namespace ros2
 }  // namespace romea
 
 #endif  // CAMPERO_HARDWARE__CAMPERO_HARDWARE_BASE_HPP_

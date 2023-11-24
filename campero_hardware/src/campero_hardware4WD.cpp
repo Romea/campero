@@ -23,6 +23,8 @@ namespace
 
 namespace romea
 {
+namespace ros2
+{
 
 //-----------------------------------------------------------------------------
 CamperoHardware4WD::CamperoHardware4WD()
@@ -43,7 +45,7 @@ void CamperoHardware4WD::send_command_()
 
   cmd.linear.x = 0.5 * (left_angular_linear_speed_ + right_angular_linear_speed_);
 
-  cmd.angular.z = SkidSteeringKinematic::
+  cmd.angular.z = core::SkidSteeringKinematic::
     computeAngularSpeed(
     left_angular_linear_speed_,
     right_angular_linear_speed_,
@@ -52,8 +54,9 @@ void CamperoHardware4WD::send_command_()
   cmd_vel_pub_->publish(cmd);
 }
 
+}  // namespace ros2
 }  // namespace romea
 
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(romea::CamperoHardware4WD, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(romea::ros2::CamperoHardware4WD, hardware_interface::SystemInterface)
