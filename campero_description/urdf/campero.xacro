@@ -9,10 +9,12 @@
       <xacro:property name="props" value="${load_yaml(conf)}" />
 
       <!-- Link names -->
-      <xacro:property name="base_link" value="${props['links']['base_link_name']}" />
+      <xacro:property name="base_link" 
+         value="${props['links']['base_link_name']}" />
       <xacro:property name="base_footprint_link"
          value="${props['links']['base_footprint_link_name']}" />
-      <xacro:property name="inertial_link" value="${props['links']['inertial_link_name']}" />
+      <xacro:property name="inertial_link" 
+         value="${props['links']['inertial_link_name']}" />
       <xacro:property name="front_left_wheel_spinning_link"
          value="${props['links']['front_left_wheel_spinning_link_name']}" />
       <xacro:property name="front_right_wheel_spinning_link"
@@ -37,12 +39,18 @@
          value="${props['joints']['rear_right_wheel_spinning_joint_name']}" />
 
       <!-- Base Properties -->
-      <xacro:property name="aabb_length" value="${props['geometry']['aabb']['length']}" />
-      <xacro:property name="aabb_width" value="${props['geometry']['aabb']['width']}" />
-      <xacro:property name="aabb_height" value="${props['geometry']['aabb']['height']}" />
-      <xacro:property name="aabb_center_x" value="${props['geometry']['aabb']['center'][0]}" />
-      <xacro:property name="aabb_center_y" value="${props['geometry']['aabb']['center'][1]}" />
-      <xacro:property name="aabb_center_z" value="${props['geometry']['aabb']['center'][2]}" />
+      <xacro:property name="aabb_length" 
+         value="${props['geometry']['aabb']['length']}" />
+      <xacro:property name="aabb_width" 
+         value="${props['geometry']['aabb']['width']}" />
+      <xacro:property name="aabb_height" 
+         value="${props['geometry']['aabb']['height']}" />
+      <xacro:property name="aabb_center_x" 
+         value="${props['geometry']['aabb']['center'][0]}" />
+      <xacro:property name="aabb_center_y" 
+         value="${props['geometry']['aabb']['center'][1]}" />
+      <xacro:property name="aabb_center_z" 
+         value="${props['geometry']['aabb']['center'][2]}" />
 
       <xacro:property name="wheelbase"
          value="${props['geometry']['axles_distance']}" />
@@ -50,19 +58,24 @@
          value="${props['geometry']['front_axle']['wheels_distance']}" />
       <xacro:property name="rear_track"
          value="${props['geometry']['rear_axle']['wheels_distance']}" />
-      <xacro:property name="track"
-         value="${front_track}" />
+      <!-- <xacro:property name="track"
+         value="${front_track}" /> -->
 
-      <xacro:property name="ground_clearance" value="${chassis_props['ground_clearance']}" />
+      <xacro:property name="mass_body" 
+         value="${props['inertia']['mass']}" />
+      <xacro:property name="mass_base" 
+         value="${props['inertia']['mass']}" />
+      <xacro:property name="mass_center_x" 
+         value="${props['inertia']['center'][0]}" />
+      <xacro:property name="mass_center_y" 
+         value="${props['inertia']['center'][1]}" />
+      <xacro:property name="mass_center_z" 
+         value="${props['inertia']['center'][2]}" />
 
-      <xacro:property name="mass_body" value="${props['inertia']['mass']}" />
-      <xacro:property name="mass_base" value="${props['inertia']['mass']}" />
-      <xacro:property name="mass_center_x" value="${props['inertia']['center'][0]}" />
-      <xacro:property name="mass_center_y" value="${props['inertia']['center'][1]}" />
-      <xacro:property name="mass_center_z" value="${props['inertia']['center'][2]}" />
-
-      <xacro:property name="ground_clearance" value="${props['geometry']['ground_clearance']}" />
-      <xacro:property name="body_reference_x" value="${props['control_point'][0]}" />
+      <xacro:property name="ground_clearance" 
+         value="${props['geometry']['ground_clearance']}" />
+      <xacro:property name="body_reference_x" 
+         value="${props['control_point'][0]}" />
 
       <!-- Wheel Properties -->
       <xacro:property name="front_hub_carrier_offset"
@@ -77,8 +90,6 @@
          value="${props['geometry']['front_axle']['wheels']['width']}" />
       <xacro:property name="rear_wheel_width"
          value="${props['geometry']['rear_axle']['wheels']['width']}" />
-      <xacro:property name="wheel_radius" value="${front_wheel_radius}" />
-      <xacro:property name="wheel_width" value="${front_wheel_width}" />
       <xacro:property name="maximal_wheel_speed"
          value="${props['wheels_speed_control']['command']['maximal_speed']}" />
 
@@ -97,11 +108,12 @@
          </visual>
 
          <!--        <xacro:if value="${model == 'rubber'}">-->
-         <cylinder length="${wheel_width}" radius="${wheel_radius}" />
+         <cylinder length="${front_wheel_width}" radius="${front_wheel_radius}" />
+         <cylinder length="${rear_wheel_width}" radius="${rear_wheel_radius}" />
+        
          <!--        </xacro:if>-->
-
-         <!--       <xacro:if value="${model == 'mecanum'}">-->
-         <!--          <mesh filename="package://campero_description/meshes/campero_meacanum_a.stl" />-->
+            <!--       <xacro:if value="${model == 'mecanum'}">-->
+            <!--          <mesh filename="package://campero_description/meshes/campero_meacanum_a.stl" />-->
          <!--       </xacro:if>-->
 
       </xacro:chassis>
