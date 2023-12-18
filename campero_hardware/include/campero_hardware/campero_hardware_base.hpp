@@ -42,7 +42,7 @@ public:
 
   CamperoHardwareBase();
 
-  virtual ~CamperoHardwareBase() = default;
+  virtual ~CamperoHardwareBase();
 
 #if ROS_DISTRO == ROS_GALACTIC
   hardware_interface::return_type read()override;

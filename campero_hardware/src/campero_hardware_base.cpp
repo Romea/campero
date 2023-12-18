@@ -103,6 +103,14 @@ CamperoHardwareBase::CamperoHardwareBase()
     rclcpp::get_logging_directory() << std::endl;
 }
 
+//-----------------------------------------------------------------------------
+CamperoHardwareBase::~CamperoHardwareBase()
+{
+  // force deactive when interface has not been deactivated by controller manager but by ctrl-c
+  if (lifecycle_state_.id() == 3) {
+    on_deactivate(lifecycle_state_);
+  }
+}
 
 //-----------------------------------------------------------------------------
 hardware_interface::return_type CamperoHardwareBase::connect_()
