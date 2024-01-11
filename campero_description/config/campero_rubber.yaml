@@ -22,19 +22,19 @@ geometry:
   ground_clearance: 0.15
 
 wheels_speed_control:
-    command:
-      maximal_speed: 3.0
-      maximal_acceleration: 1.0
-    sensor:
-      speed_std: 0.1
-      speed_range: 3.0
+  command:
+    maximal_speed: 3.0
+    maximal_acceleration: 1.0
+  sensor:
+    speed_std: 0.1
+    speed_range: 3.0
 
 inertia:
   mass: 174.0
   center: [0.0, 0.0, 0.71650]
   z_moment: 0.0
 
-control_point : [0.0, 0.0, 0.0]
+control_point: [0.0, 0.0, 0.0]
 
 joints:
   base_footprint_joint_name: base_footprint_joint
