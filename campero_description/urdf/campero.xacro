@@ -2,6 +2,8 @@
 <robot name="campero" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
    <xacro:include filename="$(find romea_mobile_base_description)/urdf/base4WD.chassis.xacro" />
+   <xacro:include filename="$(find campero_description)/urdf/visual/chassis.xacro" />
+   <xacro:include filename="$(find campero_description)/urdf/visual/wheels.xacro" />
 
    <xacro:macro name="campero" params="model mode prefix">
 
@@ -9,11 +11,11 @@
       <xacro:property name="props" value="${load_yaml(conf)}" />
 
       <!-- Link names -->
-      <xacro:property name="base_link" 
+      <xacro:property name="base_link"
          value="${props['links']['base_link_name']}" />
       <xacro:property name="base_footprint_link"
          value="${props['links']['base_footprint_link_name']}" />
-      <xacro:property name="inertial_link" 
+      <xacro:property name="inertial_link"
          value="${props['links']['inertial_link_name']}" />
       <xacro:property name="front_left_wheel_spinning_link"
          value="${props['links']['front_left_wheel_spinning_link_name']}" />
@@ -39,17 +41,17 @@
          value="${props['joints']['rear_right_wheel_spinning_joint_name']}" />
 
       <!-- Base Properties -->
-      <xacro:property name="aabb_length" 
+      <xacro:property name="aabb_length"
          value="${props['geometry']['aabb']['length']}" />
-      <xacro:property name="aabb_width" 
+      <xacro:property name="aabb_width"
          value="${props['geometry']['aabb']['width']}" />
-      <xacro:property name="aabb_height" 
+      <xacro:property name="aabb_height"
          value="${props['geometry']['aabb']['height']}" />
-      <xacro:property name="aabb_center_x" 
+      <xacro:property name="aabb_center_x"
          value="${props['geometry']['aabb']['center'][0]}" />
-      <xacro:property name="aabb_center_y" 
+      <xacro:property name="aabb_center_y"
          value="${props['geometry']['aabb']['center'][1]}" />
-      <xacro:property name="aabb_center_z" 
+      <xacro:property name="aabb_center_z"
          value="${props['geometry']['aabb']['center'][2]}" />
 
       <xacro:property name="wheelbase"
@@ -61,20 +63,20 @@
       <!-- <xacro:property name="track"
          value="${front_track}" /> -->
 
-      <xacro:property name="mass_body" 
+      <xacro:property name="mass_body"
          value="${props['inertia']['mass']}" />
-      <xacro:property name="mass_base" 
+      <xacro:property name="mass_base"
          value="${props['inertia']['mass']}" />
-      <xacro:property name="mass_center_x" 
+      <xacro:property name="mass_center_x"
          value="${props['inertia']['center'][0]}" />
-      <xacro:property name="mass_center_y" 
+      <xacro:property name="mass_center_y"
          value="${props['inertia']['center'][1]}" />
-      <xacro:property name="mass_center_z" 
+      <xacro:property name="mass_center_z"
          value="${props['inertia']['center'][2]}" />
 
-      <xacro:property name="ground_clearance" 
+      <xacro:property name="ground_clearance"
          value="${props['geometry']['ground_clearance']}" />
-      <xacro:property name="body_reference_x" 
+      <xacro:property name="body_reference_x"
          value="${props['control_point'][0]}" />
 
       <!-- Wheel Properties -->
@@ -99,23 +101,11 @@
       <xacro:property name="chassis_height" value="${min(front_wheel_radius,rear_wheel_radius)}" />
 
       <xacro:chassis>
-         <visual>
-            <!--            <origin xyz="${aabb_center_x-body_reference_x} ${aabb_center_y}
-            ${aabb_center_z-chassis_height}" rpy="0 0 0" />-->
-            <geometry>
-               <mesh filename="package://campero_description/meshes/chassis.stl" />
-            </geometry>
-         </visual>
-
-         <!--        <xacro:if value="${model == 'rubber'}">-->
-         <cylinder length="${front_wheel_width}" radius="${front_wheel_radius}" />
-         <cylinder length="${rear_wheel_width}" radius="${rear_wheel_radius}" />
-        
-         <!--        </xacro:if>-->
-            <!--       <xacro:if value="${model == 'mecanum'}">-->
-            <!--          <mesh filename="package://campero_description/meshes/campero_meacanum_a.stl" />-->
-         <!--       </xacro:if>-->
-
+         <xacro:chassis_visual />
+         <xacro:front_left_wheel_visual />
+         <xacro:front_right_wheel_visual />
+         <xacro:rear_left_wheel_visual />
+         <xacro:rear_right_wheel_visual />
       </xacro:chassis>
 
    </xacro:macro>

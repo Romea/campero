@@ -21,6 +21,12 @@
       value="${props['joints']['rear_right_wheel_spinning_joint_name']}" />
 
     <!-- Geometry -->
+    <xacro:property name="wheelbase"
+      value="${props['geometry']['axles_distance']}" />
+    <xacro:property name="front_track"
+      value="${props['geometry']['front_axle']['wheels_distance']}" />
+    <xacro:property name="rear_track"
+      value="${props['geometry']['rear_axle']['wheels_distance']}" />
     <xacro:property name="front_wheel_radius"
       value="${props['geometry']['front_axle']['wheels']['radius']}" />
     <xacro:property name="rear_wheel_radius"
