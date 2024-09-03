@@ -13,14 +13,14 @@
 // limitations under the License.
 
 
-// romea
-#include <romea_common_utils/qos.hpp>
-#include <romea_mobile_base_hardware/hardware_info.hpp>
-
 // std
 #include <limits>
 #include <vector>
 #include <string>
+
+// romea
+#include "romea_common_utils/qos.hpp"
+#include "romea_mobile_base_utils/ros2_control/info/hardware_info_common.hpp"
 
 // local
 #include "campero_hardware/campero_hardware_base.hpp"
@@ -137,10 +137,14 @@ hardware_interface::return_type CamperoHardwareBase::load_info_(
   RCLCPP_ERROR_STREAM(rclcpp::get_logger("CamperoHardwareBase"), "load_info");
 
   try {
-    front_wheel_radius_ = get_parameter<float>(hardware_info, "front_wheel_radius");
-    rear_wheel_radius_ = get_parameter<float>(hardware_info, "rear_wheel_radius");
-    wheelbase_ = get_parameter<float>(hardware_info, "wheelbase");
-    track_ = get_parameter<float>(hardware_info, "track_");
+    // front_wheel_radius_ = get_parameter<float>(hardware_info, "front_wheel_radius");
+    // rear_wheel_radius_ = get_parameter<float>(hardware_info, "rear_wheel_radius");
+    // wheelbase_ = get_parameter<float>(hardware_info, "wheelbase");
+    // track_ = get_parameter<float>(hardware_info, "track_");
+    front_wheel_radius_ = get_front_wheel_radius(hardware_info);
+    rear_wheel_radius_ = get_rear_wheel_radius(hardware_info);
+    wheelbase_ = get_wheelbase(hardware_info);
+    track_ = get_front_track(hardware_info);
     return hardware_interface::return_type::OK;
   } catch (std::runtime_error & e) {
     RCLCPP_FATAL_STREAM(rclcpp::get_logger("CamperoHardwareBase"), e.what());
@@ -217,13 +221,13 @@ void CamperoHardwareBase::set_hardware_state_()
   state.frontRightWheelSpinningMotion.velocity = front_right_wheel_angular_speed_measure_;
   state.rearLeftWheelSpinningMotion.velocity = front_left_wheel_angular_speed_measure_;
   state.rearRightWheelSpinningMotion.velocity = front_right_wheel_angular_speed_measure_;
-  this->hardware_interface_->set_state(state);
+  this->hardware_interface_->set_feedback(state);
 }
 
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::get_hardware_command_()
 {
-  core::HardwareCommand4WD command = hardware_interface_->get_command();
+  core::HardwareCommand4WD command = hardware_interface_->get_hardware_command();
   front_left_wheel_angular_speed_command_ = command.frontLeftWheelSpinningSetPoint;
   front_right_wheel_angular_speed_command_ = command.frontRightWheelSpinningSetPoint;
   rear_left_wheel_angular_speed_command_ = command.rearLeftWheelSpinningSetPoint;
