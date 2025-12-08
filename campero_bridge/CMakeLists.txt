@@ -54,7 +54,7 @@ if(${ROS_VERSION} EQUAL 1)
 
     install(TARGETS
       ${PROJECT_NAME}_node
-      DESTINATION lib/${PROJECT_NAME}_node)
+      DESTINATION lib/${PROJECT_NAME})
     
     install(PROGRAMS
       scripts/campero_bridge
