@@ -139,6 +139,12 @@ void CamperoBridge::init_ros2_publishers_()
     create_publisher<Ros2OdomMsg>(bridge_odom_topic, data_qos);
   ros2_joint_states_pub_ = ros2_node_ptr_->
     create_publisher<Ros2JointStatesMsg>(bridge_joint_states_topic, data_qos);
+  RCLCPP_INFO_STREAM(
+    ros2_node_ptr_->get_logger(),
+    "Create pub 2 -> 1: " << bridge_odom_topic << " -> " << campero_odom_topic);
+  RCLCPP_INFO_STREAM(
+    ros2_node_ptr_->get_logger(),
+    "Create pub 2 -> 1: " << bridge_joint_states_topic << " -> " << campero_joint_states_topic);
 }
 
 //-----------------------------------------------------------------------------
@@ -162,4 +168,8 @@ void CamperoBridge::init_ros2_subcription_()
 
   ros2_cmd_vel_sub_ = ros2_node_ptr_->create_subscription<Ros2TwistMsg>(
     bridge_cmd_vel_topic, cmd_qos, callback, options);
+
+  RCLCPP_INFO_STREAM(
+    ros2_node_ptr_->get_logger(),
+    "Create sub 2 <- 1: " << bridge_cmd_vel_topic << " <- " << campero_cmd_vel_topic);
 }

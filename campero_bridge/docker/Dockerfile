@@ -24,14 +24,15 @@ RUN --mount=type=bind,source=package.xml,target=/tmp/bridge/package.xml \
     && rosdep install -iyr --from-paths /tmp/bridge \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /bridge_ws/src/bridge
 WORKDIR /bridge_ws
 
 # compile this package (the bridge)
-RUN ROS2_DISTRO=${ROS_DISTRO} \
+RUN --mount=type=bind,source=.,target=/bridge_ws/src/bridge \
+    ROS2_DISTRO=${ROS_DISTRO} \
     && . /opt/ros/one/setup.sh \
     && . /opt/ros/${ROS2_DISTRO}/local_setup.sh \
-    && ROS_VERSION=1 colcon --log-base /dev/null build --event-handlers event_log- log-
+    && ROS_VERSION=1 colcon --log-base /dev/null build \
+    && rm -rf /bridge_ws/build
 
 # override entrypoint
 COPY docker/entrypoint.sh /ros_entrypoint.sh
