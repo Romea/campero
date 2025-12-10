@@ -71,12 +71,13 @@ def launch_setup(context, *args, **kwargs):
     with open(base_ros2_control_description_file, "r") as f:
         base_ros2_control_description = f.read()
 
-    campero_bridge = Node(
-        condition=LaunchConfigurationEquals("mode", "live"),
-        package="campero_bridge",
-        executable="campero_bridge",
-        output="screen",
-    )
+    ## launched separately
+    # campero_bridge = Node(
+    #     condition=LaunchConfigurationEquals("mode", "live"),
+    #     package="campero_bridge",
+    #     executable="campero_bridge",
+    #     output="screen",
+    # )
 
     controller_manager = Node(
         condition=LaunchConfigurationEquals("mode", "live"),
@@ -86,7 +87,6 @@ def launch_setup(context, *args, **kwargs):
             {"robot_description": base_ros2_control_description},
             controller_manager_yaml_file
         ],
-        namespace="base",
         # output="screen",
     )
 
@@ -123,12 +123,12 @@ def launch_setup(context, *args, **kwargs):
     )
 
     return [
-        campero_bridge,
         GroupAction(
             actions=[
                 SetParameter(name="use_sim_time", value=(mode != "live")),
                 PushRosNamespace(robot_namespace),
                 PushRosNamespace(base_name),
+                # campero_bridge,
                 controller_manager,
                 controller,
                 cmd_mux,

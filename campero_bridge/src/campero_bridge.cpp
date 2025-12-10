@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include "campero_bridge.hpp"
 
 // joints:
@@ -38,22 +37,18 @@ const char campero_joint_states_topic[] = "/campero/joint_states";
 const char campero_front_laser_scan_topic[] = "/campero/front_laser/scan";
 const char campero_rear_laser_scan_topic[] = "/campero/rear_laser/scan";
 
-const char bridge_odom_topic[] = "/campero_bridge/vehicle_controller/odom";
-const char bridge_cmd_vel_topic[] = "/campero_bridge/vehicle_controller/cmd_steer";
-const char bridge_joint_states_topic[] = "/campero_bridge/vehicle_controller/joint_states";
-const char bridge_front_laser_scan_topic[] = "/campero_bridge/front_laser/scan";
-const char bridge_rear_laser_scan_topic[] = "/campero_bridge/rear_laser/scan";
+const char bridge_odom_topic[] = "~/vehicle_controller/odom";
+const char bridge_cmd_vel_topic[] = "~/vehicle_controller/cmd_vel";
+const char bridge_joint_states_topic[] = "~/vehicle_controller/joint_states";
+const char bridge_front_laser_scan_topic[] = "~/front_laser/scan";
+const char bridge_rear_laser_scan_topic[] = "~/rear_laser/scan";
 
 const rclcpp::QoS data_qos = rclcpp::SensorDataQoS().reliable();
-const rclcpp::QoS cmd_qos = rclcpp::QoS(rclcpp::KeepLast(1)).
-  best_effort().durability_volatile();
+const rclcpp::QoS cmd_qos = rclcpp::QoS(rclcpp::KeepLast(1)).best_effort().durability_volatile();
 
 //-----------------------------------------------------------------------------
-CamperoBridge::CamperoBridge(
-  Ros1NodePtr ros1_node_ptr,
-  Ros2NodePtr ros2_node_ptr)
-: ros1_node_ptr_(ros1_node_ptr),
-  ros2_node_ptr_(ros2_node_ptr)
+CamperoBridge::CamperoBridge(Ros1NodePtr ros1_node_ptr, Ros2NodePtr ros2_node_ptr)
+: ros1_node_ptr_(ros1_node_ptr), ros2_node_ptr_(ros2_node_ptr)
 {
 }
 
@@ -65,6 +60,9 @@ void CamperoBridge::ros2_cmd_vel_callback_(const Ros2TwistMsg::SharedPtr ros2_ms
   ros1_msg.linear.y = ros2_msg->linear.y;
   ros1_msg.linear.z = ros2_msg->linear.z;
   ros1_cmd_vel_pub_.publish(ros1_msg);
+
+  RCLCPP_INFO_STREAM_ONCE(
+    ros2_node_ptr_->get_logger(), "ROS2: Received message from " << bridge_cmd_vel_topic);
 }
 
 //-----------------------------------------------------------------------------
@@ -101,6 +99,9 @@ void CamperoBridge::ros1_odometry_callback_(const Ros1OdomMsg::ConstPtr & ros1_m
     ros2_msg.twist.covariance.begin());
 
   ros2_odom_pub_->publish(ros2_msg);
+
+  RCLCPP_INFO_STREAM_ONCE(
+    ros2_node_ptr_->get_logger(), "ROS1: Received message from " << campero_odom_topic);
 }
 
 //-----------------------------------------------------------------------------
@@ -114,6 +115,9 @@ void CamperoBridge::ros1_joint_states_callback_(const Ros1JointStatesMsg::ConstP
   ros2_msg.velocity = ros1_msg->velocity;
   ros2_msg.effort = ros1_msg->effort;
   ros2_joint_states_pub_->publish(ros2_msg);
+
+  RCLCPP_INFO_STREAM_ONCE(
+    ros2_node_ptr_->get_logger(), "ROS1: Received message from " << campero_joint_states_topic);
 }
 
 //-----------------------------------------------------------------------------
@@ -128,17 +132,15 @@ void CamperoBridge::start()
 //-----------------------------------------------------------------------------
 void CamperoBridge::init_ros1_publisher_()
 {
-  ros1_cmd_vel_pub_ = ros1_node_ptr_->
-    advertise<Ros1TwistMsg>(campero_cmd_vel_topic, 1);
+  ros1_cmd_vel_pub_ = ros1_node_ptr_->advertise<Ros1TwistMsg>(campero_cmd_vel_topic, 1);
 }
 
 //-----------------------------------------------------------------------------
 void CamperoBridge::init_ros2_publishers_()
 {
-  ros2_odom_pub_ = ros2_node_ptr_->
-    create_publisher<Ros2OdomMsg>(bridge_odom_topic, data_qos);
-  ros2_joint_states_pub_ = ros2_node_ptr_->
-    create_publisher<Ros2JointStatesMsg>(bridge_joint_states_topic, data_qos);
+  ros2_odom_pub_ = ros2_node_ptr_->create_publisher<Ros2OdomMsg>(bridge_odom_topic, data_qos);
+  ros2_joint_states_pub_ =
+    ros2_node_ptr_->create_publisher<Ros2JointStatesMsg>(bridge_joint_states_topic, data_qos);
   RCLCPP_INFO_STREAM(
     ros2_node_ptr_->get_logger(),
     "Create pub 2 -> 1: " << bridge_odom_topic << " -> " << campero_odom_topic);
@@ -162,9 +164,7 @@ void CamperoBridge::init_ros2_subcription_()
   rclcpp::SubscriptionOptions options;
   options.ignore_local_publications = true;
 
-  auto callback = std::bind(
-    &CamperoBridge::ros2_cmd_vel_callback_,
-    this, std::placeholders::_1);
+  auto callback = std::bind(&CamperoBridge::ros2_cmd_vel_callback_, this, std::placeholders::_1);
 
   ros2_cmd_vel_sub_ = ros2_node_ptr_->create_subscription<Ros2TwistMsg>(
     bridge_cmd_vel_topic, cmd_qos, callback, options);

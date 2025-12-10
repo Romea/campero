@@ -35,7 +35,8 @@ namespace
 
 size_t joint_id(const std::vector<std::string> joint_state_names, const std::string & joint_name)
 {
-  auto it = std::find(joint_state_names.cbegin(), joint_state_names.cend(), joint_name);
+  auto it =
+    std::find(joint_state_names.cbegin(), joint_state_names.cend(), "campero_" + joint_name);
 
   if (it == joint_state_names.end()) {
     throw std::runtime_error("Cannot find info of " + joint_name + " in joint_states msg");
