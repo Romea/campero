@@ -59,6 +59,9 @@ void CamperoBridge::ros2_cmd_vel_callback_(const Ros2TwistMsg::SharedPtr ros2_ms
   ros1_msg.linear.x = ros2_msg->linear.x;
   ros1_msg.linear.y = ros2_msg->linear.y;
   ros1_msg.linear.z = ros2_msg->linear.z;
+  ros1_msg.angular.x = ros2_msg->angular.x;
+  ros1_msg.angular.y = ros2_msg->angular.y;
+  ros1_msg.angular.z = ros2_msg->angular.z;
   ros1_cmd_vel_pub_.publish(ros1_msg);
 
   RCLCPP_INFO_STREAM_ONCE(
@@ -143,10 +146,10 @@ void CamperoBridge::init_ros2_publishers_()
     ros2_node_ptr_->create_publisher<Ros2JointStatesMsg>(bridge_joint_states_topic, data_qos);
   RCLCPP_INFO_STREAM(
     ros2_node_ptr_->get_logger(),
-    "Create pub 2 -> 1: " << bridge_odom_topic << " -> " << campero_odom_topic);
+    "Create pub 2 <- 1: " << bridge_odom_topic << " <- " << campero_odom_topic);
   RCLCPP_INFO_STREAM(
     ros2_node_ptr_->get_logger(),
-    "Create pub 2 -> 1: " << bridge_joint_states_topic << " -> " << campero_joint_states_topic);
+    "Create pub 2 <- 1: " << bridge_joint_states_topic << " <- " << campero_joint_states_topic);
 }
 
 //-----------------------------------------------------------------------------
@@ -171,5 +174,5 @@ void CamperoBridge::init_ros2_subcription_()
 
   RCLCPP_INFO_STREAM(
     ros2_node_ptr_->get_logger(),
-    "Create sub 2 <- 1: " << bridge_cmd_vel_topic << " <- " << campero_cmd_vel_topic);
+    "Create sub 2 -> 1: " << bridge_cmd_vel_topic << " -> " << campero_cmd_vel_topic);
 }
