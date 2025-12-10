@@ -84,8 +84,8 @@ protected:
 #endif
 
 protected:
-  float front_wheel_radius_;
-  float rear_wheel_radius_;
+  double front_wheel_radius_;
+  double rear_wheel_radius_;
   double wheelbase_;
   double track_;
 

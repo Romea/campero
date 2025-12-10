@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // std
 #include <limits>
-#include <vector>
 #include <string>
+#include <vector>
 
 // romea
 #include "romea_common_utils/qos.hpp"
@@ -34,14 +33,9 @@
 namespace
 {
 
-size_t joint_id(
-  const std::vector<std::string> joint_state_names,
-  const std::string & joint_name)
+size_t joint_id(const std::vector<std::string> joint_state_names, const std::string & joint_name)
 {
-  auto it = std::find(
-    joint_state_names.cbegin(),
-    joint_state_names.cend(),
-    joint_name);
+  auto it = std::find(joint_state_names.cbegin(), joint_state_names.cend(), joint_name);
 
   if (it == joint_state_names.end()) {
     throw std::runtime_error("Cannot find info of " + joint_name + " in joint_states msg");
@@ -51,8 +45,7 @@ size_t joint_id(
 }
 
 const double & velocity(
-  const sensor_msgs::msg::JointState & joint_states,
-  const std::string & joint_name)
+  const sensor_msgs::msg::JointState & joint_states, const std::string & joint_name)
 {
   return joint_states.velocity[joint_id(joint_states.name, joint_name)];
 }
@@ -89,18 +82,23 @@ CamperoHardwareBase::CamperoHardwareBase()
   write_log_header_();
 #endif
 
+  // std::string ns = "_" + hardware_info.name;
+  // std::replace(ns.begin(), ns.end(), '_', '/');
+  // RCLCPP_INFO_STREAM(rclcpp::get_logger("CamperoHardwareBase"), "hardware node name: " << ns);
+  // node_ = rclcpp::Node::make_shared("hardware", ns);
 
   node_ = rclcpp::Node::make_shared("mobile_base_controller_bridge");
-  auto callback = std::bind(
-    &CamperoHardwareBase::joint_states_callback_, this,
-    std::placeholders::_1);
+  auto callback =
+    std::bind(&CamperoHardwareBase::joint_states_callback_, this, std::placeholders::_1);
   cmd_vel_pub_ = node_->create_publisher<geometry_msgs::msg::Twist>(
-    "/alpo_bridge/vehicle_controller/cmd_vel", sensor_data_qos());
+    "bridge/vehicle_controller/cmd_vel", sensor_data_qos());
   joint_states_sub_ = node_->create_subscription<sensor_msgs::msg::JointState>(
-    "/alpo_bridge/vehicle_controller/joint_states", best_effort(1), callback);
+    "bridge/vehicle_controller/joint_states", best_effort(1), callback);
 
-  std::cout << " logger name" << node_->get_logger().get_name() << " " <<
-    rclcpp::get_logging_directory() << std::endl;
+  RCLCPP_INFO_STREAM(
+    rclcpp::get_logger("CamperoHardwareBase"), "logger name: " << node_->get_logger().get_name());
+  RCLCPP_INFO_STREAM(
+    rclcpp::get_logger("CamperoHardwareBase"), "logger dir: " << rclcpp::get_logging_directory());
 }
 
 //-----------------------------------------------------------------------------
@@ -115,7 +113,7 @@ CamperoHardwareBase::~CamperoHardwareBase()
 //-----------------------------------------------------------------------------
 hardware_interface::return_type CamperoHardwareBase::connect_()
 {
-  RCLCPP_ERROR(rclcpp::get_logger("CamperoHardwareBase"), "Init communication with robot");
+  RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Init communication with robot");
 
   send_null_command_();
   return hardware_interface::return_type::OK;
@@ -124,7 +122,7 @@ hardware_interface::return_type CamperoHardwareBase::connect_()
 //-----------------------------------------------------------------------------
 hardware_interface::return_type CamperoHardwareBase::disconnect_()
 {
-  RCLCPP_ERROR(rclcpp::get_logger("CamperoHardwareBase"), "Close communication with robot");
+  RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Close communication with robot");
 
   send_null_command_();
   return hardware_interface::return_type::OK;
@@ -134,8 +132,6 @@ hardware_interface::return_type CamperoHardwareBase::disconnect_()
 hardware_interface::return_type CamperoHardwareBase::load_info_(
   const hardware_interface::HardwareInfo & hardware_info)
 {
-  RCLCPP_ERROR_STREAM(rclcpp::get_logger("CamperoHardwareBase"), "load_info");
-
   try {
     // front_wheel_radius_ = get_parameter<float>(hardware_info, "front_wheel_radius");
     // rear_wheel_radius_ = get_parameter<float>(hardware_info, "rear_wheel_radius");
@@ -152,7 +148,6 @@ hardware_interface::return_type CamperoHardwareBase::load_info_(
   }
 }
 
-
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::send_null_command_()
 {
@@ -164,8 +159,7 @@ void CamperoHardwareBase::send_null_command_()
 hardware_interface::return_type CamperoHardwareBase::read()
 #else
 hardware_interface::return_type CamperoHardwareBase::read(
-  const rclcpp::Time & /*time*/,
-  const rclcpp::Duration & /*period*/)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 #endif
 {
   //    RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Read data from robot");
@@ -183,14 +177,12 @@ hardware_interface::return_type CamperoHardwareBase::read(
   }
 }
 
-
 //-----------------------------------------------------------------------------
 #if ROS_DISTRO == ROS_GALACTIC
 hardware_interface::return_type CamperoHardwareBase::write()
 #else
 hardware_interface::return_type CamperoHardwareBase::write(
-  const rclcpp::Time & /*time*/,
-  const rclcpp::Duration & /*period*/)
+  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 #endif
 {
   //  RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Send command to robot");
@@ -203,14 +195,10 @@ hardware_interface::return_type CamperoHardwareBase::write(
 void CamperoHardwareBase::joint_states_callback_(
   const sensor_msgs::msg::JointState::ConstSharedPtr msg)
 {
-  front_left_wheel_angular_speed_measure_ =
-    velocity(*msg, "front_right_wheel_joint");
-  front_right_wheel_angular_speed_measure_ =
-    velocity(*msg, "front_left_wheel_joint");
-  rear_left_wheel_angular_speed_measure_ =
-    velocity(*msg, "back_left_wheel_joint");
-  rear_right_wheel_angular_speed_measure_ =
-    velocity(*msg, "back_right_wheel_joint");
+  front_left_wheel_angular_speed_measure_ = velocity(*msg, "front_right_wheel_joint");
+  front_right_wheel_angular_speed_measure_ = velocity(*msg, "front_left_wheel_joint");
+  rear_left_wheel_angular_speed_measure_ = velocity(*msg, "back_left_wheel_joint");
+  rear_right_wheel_angular_speed_measure_ = velocity(*msg, "back_right_wheel_joint");
 }
 
 //-----------------------------------------------------------------------------
@@ -239,8 +227,7 @@ void CamperoHardwareBase::get_hardware_command_()
 void CamperoHardwareBase::open_log_file_()
 {
   debug_file_.open(
-    std::string("campero.dat").c_str(),
-    std::fstream::in | std::fstream::out | std::fstream::trunc);
+    std::string("campero.dat").c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::write_log_header_()
