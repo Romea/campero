@@ -84,10 +84,10 @@ protected:
 #endif
 
 protected:
-  double front_wheel_radius_;
-  double rear_wheel_radius_;
-  double wheelbase_;
-  double track_;
+  float front_wheel_radius_;
+  float rear_wheel_radius_;
+  float wheelbase_;
+  float track_;
 
 
   rclcpp::Node::SharedPtr node_;

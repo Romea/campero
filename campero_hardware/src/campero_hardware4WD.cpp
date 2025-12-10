@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include "campero_hardware/campero_hardware4WD.hpp"
+
 #include "romea_core_mobile_base/kinematic/skid_steering/SkidSteeringKinematic.hpp"
 
 namespace
@@ -27,8 +27,7 @@ namespace ros2
 {
 
 //-----------------------------------------------------------------------------
-CamperoHardware4WD::CamperoHardware4WD()
-: CamperoHardwareBase()
+CamperoHardware4WD::CamperoHardware4WD() : CamperoHardwareBase()
 {
 }
 
@@ -37,26 +36,23 @@ void CamperoHardware4WD::send_command_()
 {
   geometry_msgs::msg::Twist cmd;
 
-  double left_angular_linear_speed_ = (front_left_wheel_angular_speed_command_ +
-    rear_left_wheel_angular_speed_command_);
+  double left_linear_speed_ = 0.5 * (front_left_wheel_angular_speed_command_ * front_wheel_radius_ +
+                                     rear_left_wheel_angular_speed_command_ * rear_wheel_radius_);
 
-  double right_angular_linear_speed_ = (front_right_wheel_angular_speed_command_ +
-    rear_right_wheel_angular_speed_command_);
+  double right_linear_speed_ =
+    0.5 * (front_right_wheel_angular_speed_command_ * front_wheel_radius_ +
+           rear_right_wheel_angular_speed_command_ * rear_wheel_radius_);
 
-  cmd.linear.x = 0.5 * (left_angular_linear_speed_ + right_angular_linear_speed_);
+  cmd.linear.x = 0.5 * (left_linear_speed_ + right_linear_speed_);
 
-  cmd.angular.z = core::SkidSteeringKinematic::
-    computeAngularSpeed(
-    left_angular_linear_speed_,
-    right_angular_linear_speed_,
-    track_);
+  cmd.angular.z = core::SkidSteeringKinematic::computeAngularSpeed(
+    left_linear_speed_, right_linear_speed_, track_);
 
   cmd_vel_pub_->publish(cmd);
 }
 
 }  // namespace ros2
 }  // namespace romea
-
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(romea::ros2::CamperoHardware4WD, hardware_interface::SystemInterface)

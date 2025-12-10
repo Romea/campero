@@ -63,16 +63,14 @@ CamperoHardwareBase::CamperoHardwareBase()
 : HardwareSystemInterface<HardwareInterface4WD>(),
   front_wheel_radius_(0),
   rear_wheel_radius_(0),
-  //  front_left_wheel_steering_angle_measure_(0),
-  //  front_right_wheel_steering_angle_measure_(0),
-  //  front_left_wheel_angular_speed_measure_(0),
-  //  front_right_wheel_angular_speed_measure_(0),
-  //  rear_left_wheel_angular_speed_measure_(0),
-  //  rear_right_wheel_angular_speed_measure_(0),
-  front_left_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
-  front_right_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
-  rear_left_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
-  rear_right_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
+  front_left_wheel_angular_speed_measure_(0),
+  front_right_wheel_angular_speed_measure_(0),
+  rear_left_wheel_angular_speed_measure_(0),
+  rear_right_wheel_angular_speed_measure_(0),
+  // front_left_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
+  // front_right_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
+  // rear_left_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
+  // rear_right_wheel_angular_speed_measure_(std::numeric_limits<double>::quiet_NaN()),
   front_left_wheel_angular_speed_command_(0),
   front_right_wheel_angular_speed_command_(0),
   rear_left_wheel_angular_speed_command_(0),
@@ -82,11 +80,6 @@ CamperoHardwareBase::CamperoHardwareBase()
   open_log_file_();
   write_log_header_();
 #endif
-
-  // std::string ns = "_" + hardware_info.name;
-  // std::replace(ns.begin(), ns.end(), '_', '/');
-  // RCLCPP_INFO_STREAM(rclcpp::get_logger("CamperoHardwareBase"), "hardware node name: " << ns);
-  // node_ = rclcpp::Node::make_shared("hardware", ns);
 
   node_ = rclcpp::Node::make_shared("mobile_base_controller_bridge");
   auto callback =
@@ -138,10 +131,10 @@ hardware_interface::return_type CamperoHardwareBase::load_info_(
     // rear_wheel_radius_ = get_parameter<float>(hardware_info, "rear_wheel_radius");
     // wheelbase_ = get_parameter<float>(hardware_info, "wheelbase");
     // track_ = get_parameter<float>(hardware_info, "track_");
-    front_wheel_radius_ = get_front_wheel_radius(hardware_info);
-    rear_wheel_radius_ = get_rear_wheel_radius(hardware_info);
-    wheelbase_ = get_wheelbase(hardware_info);
-    track_ = get_front_track(hardware_info);
+    front_wheel_radius_ = static_cast<float>(get_front_wheel_radius(hardware_info));
+    rear_wheel_radius_ = static_cast<float>(get_rear_wheel_radius(hardware_info));
+    wheelbase_ = static_cast<float>(get_wheelbase(hardware_info));
+    track_ = static_cast<float>(get_front_track(hardware_info));
     return hardware_interface::return_type::OK;
   } catch (std::runtime_error & e) {
     RCLCPP_FATAL_STREAM(rclcpp::get_logger("CamperoHardwareBase"), e.what());
@@ -228,17 +221,16 @@ void CamperoHardwareBase::get_hardware_command_()
 void CamperoHardwareBase::open_log_file_()
 {
   debug_file_.open(
-    std::string("campero.dat").c_str(), std::fstream::in | std::fstream::out | std::fstream::trunc);
+    (rclcpp::get_logging_directory() / "campero_control.csv").string(),
+    std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::write_log_header_()
 {
   if (debug_file_.is_open()) {
-    debug_file_ << "# time, ";
-    debug_file_ << " FLS, " << " FRS, ";
-    debug_file_ << " RLS, " << " RRS, ";
-    debug_file_ << " FLS_cmd, " << " FRS_cmd, ";
-    debug_file_ << " RLS_cmd, " << " RRS_cmd, ";
+    debug_file_ << "time,";
+    debug_file_ << "FLS,FRS,RLS,RRS,";
+    debug_file_ << "FLS_cmd,FRS_cmd,RLS_cmd,RRS_cmd" << std::endl;
   }
 }
 
@@ -247,18 +239,20 @@ void CamperoHardwareBase::write_log_data_()
 {
   if (debug_file_.is_open()) {
     auto now = std::chrono::system_clock::now();
-    auto now_ns = std::chrono::time_point_cast<std::chrono::nanoseconds>(now);
+    auto now_d = std::chrono::time_point_cast<std::chrono::duration<double>>(now);
 
-    debug_file_ << std::setprecision(10);
-    debug_file_ << now_ns.time_since_epoch().count() << " ";
-    debug_file_ << front_left_wheel_angular_speed_measure_ * front_wheel_radius_ << " ";
-    debug_file_ << front_right_wheel_angular_speed_measure_ * front_wheel_radius_ << " ";
-    debug_file_ << rear_left_wheel_angular_speed_measure_ * rear_wheel_radius_ << " ";
-    debug_file_ << rear_right_wheel_angular_speed_measure_ * rear_wheel_radius_ << " ";
-    debug_file_ << front_left_wheel_angular_speed_command_ * front_wheel_radius_ << " ";
-    debug_file_ << front_right_wheel_angular_speed_command_ * front_wheel_radius_ << " ";
-    debug_file_ << rear_left_wheel_angular_speed_command_ * rear_wheel_radius_ << " ";
-    debug_file_ << rear_right_wheel_angular_speed_command_ * rear_wheel_radius_ << " ";
+    debug_file_ << std::fixed;
+    debug_file_.precision(6);
+    debug_file_ << now_d.time_since_epoch().count() << ",";
+    debug_file_.precision(3);
+    debug_file_ << front_left_wheel_angular_speed_measure_ * front_wheel_radius_ << ",";
+    debug_file_ << front_right_wheel_angular_speed_measure_ * front_wheel_radius_ << ",";
+    debug_file_ << rear_left_wheel_angular_speed_measure_ * rear_wheel_radius_ << ",";
+    debug_file_ << rear_right_wheel_angular_speed_measure_ * rear_wheel_radius_ << ",";
+    debug_file_ << front_left_wheel_angular_speed_command_ * front_wheel_radius_ << ",";
+    debug_file_ << front_right_wheel_angular_speed_command_ * front_wheel_radius_ << ",";
+    debug_file_ << rear_left_wheel_angular_speed_command_ * rear_wheel_radius_ << ",";
+    debug_file_ << rear_right_wheel_angular_speed_command_ * rear_wheel_radius_ << std::endl;
   }
 }
 #endif
