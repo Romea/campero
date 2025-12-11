@@ -23,9 +23,10 @@
 namespace
 {
 
-const std::string & master = "http://192.168.100.1:11311";
+const std::string & MASTER_URI = "http://192.168.0.200:11311";
+const std::string & IP_PREFIX = "192.168.0";
 
-std::string find_local_end_ip()
+std::string find_local_end_ip(const std::string & ip_prefix)
 {
   std::string local_end_ip;
 
@@ -44,7 +45,7 @@ std::string find_local_end_ip()
 
       if (addr->ifa_addr->sa_family == AF_INET) {
         std::string ip = inet_ntoa(reinterpret_cast<sockaddr_in *>(addr->ifa_addr)->sin_addr);
-        if (ip.find("192.168.100") == 0) {
+        if (ip.find(ip_prefix) == 0) {
           local_end_ip = ip;
         }
       }
@@ -63,7 +64,7 @@ int main(int argc, char * argv[])
   rclcpp::init(argc, argv);
   auto ros2_node_ptr = rclcpp::Node::make_shared("bridge");
 
-  ros2_node_ptr->declare_parameter("override_ros1_master", true);
+  ros2_node_ptr->declare_parameter("override_ros1_master", false);
   auto override_param = ros2_node_ptr->get_parameter("override_ros1_master");
   bool override_ros1_master = override_param.get_value<bool>();
   // RCLCPP_INFO_STREAM(ros2_node_ptr->get_logger(), "override_ros1_master: " << override_ros1_master);
@@ -71,7 +72,7 @@ int main(int argc, char * argv[])
   ros::M_string remappings;
 
   if (override_ros1_master) {
-    std::string ip = find_local_end_ip();
+    std::string ip = find_local_end_ip(IP_PREFIX);
     if (ip.empty()) {
       RCLCPP_FATAL_STREAM(
         ros2_node_ptr->get_logger(), "No ethernet connection with the robot, bridge failed");
@@ -79,7 +80,7 @@ int main(int argc, char * argv[])
     }
 
     remappings["__ip"] = ip;
-    remappings["__master"] = master;
+    remappings["__master"] = MASTER_URI;
   }
 
   ros::init(remappings, "robot_bridge");
