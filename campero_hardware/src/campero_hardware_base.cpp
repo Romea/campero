@@ -201,8 +201,8 @@ void CamperoHardwareBase::set_hardware_state_()
   core::HardwareState4WD state;
   state.frontLeftWheelSpinningMotion.velocity = front_left_wheel_angular_speed_measure_;
   state.frontRightWheelSpinningMotion.velocity = front_right_wheel_angular_speed_measure_;
-  state.rearLeftWheelSpinningMotion.velocity = front_left_wheel_angular_speed_measure_;
-  state.rearRightWheelSpinningMotion.velocity = front_right_wheel_angular_speed_measure_;
+  state.rearLeftWheelSpinningMotion.velocity = rear_left_wheel_angular_speed_measure_;
+  state.rearRightWheelSpinningMotion.velocity = rear_right_wheel_angular_speed_measure_;
   this->hardware_interface_->set_feedback(state);
 }
 
