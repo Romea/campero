@@ -189,8 +189,8 @@ hardware_interface::return_type CamperoHardwareBase::write(
 void CamperoHardwareBase::joint_states_callback_(
   const sensor_msgs::msg::JointState::ConstSharedPtr msg)
 {
-  front_left_wheel_angular_speed_measure_ = velocity(*msg, "front_right_wheel_joint");
-  front_right_wheel_angular_speed_measure_ = velocity(*msg, "front_left_wheel_joint");
+  front_left_wheel_angular_speed_measure_ = velocity(*msg, "front_left_wheel_joint");
+  front_right_wheel_angular_speed_measure_ = velocity(*msg, "front_right_wheel_joint");
   rear_left_wheel_angular_speed_measure_ = velocity(*msg, "back_left_wheel_joint");
   rear_right_wheel_angular_speed_measure_ = velocity(*msg, "back_right_wheel_joint");
 }
