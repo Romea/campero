@@ -36,15 +36,36 @@ const char campero_cmd_vel_topic[] = "/campero/robotnik_base_control/cmd_vel";
 const char campero_joint_states_topic[] = "/campero/joint_states";
 const char campero_front_laser_scan_topic[] = "/campero/front_laser/scan";
 const char campero_rear_laser_scan_topic[] = "/campero/rear_laser/scan";
+const char campero_joy_topic[] = "/campero/joy";
 
 const char bridge_odom_topic[] = "~/vehicle_controller/odom";
 const char bridge_cmd_vel_topic[] = "~/vehicle_controller/cmd_vel";
 const char bridge_joint_states_topic[] = "~/vehicle_controller/joint_states";
+const char bridge_joy_topic[] = "~/joy";
 const char bridge_front_laser_scan_topic[] = "~/front_laser/scan";
 const char bridge_rear_laser_scan_topic[] = "~/rear_laser/scan";
 
 const rclcpp::QoS data_qos = rclcpp::SensorDataQoS().reliable();
 const rclcpp::QoS cmd_qos = rclcpp::QoS(rclcpp::KeepLast(1)).best_effort().durability_volatile();
+
+namespace
+{
+
+void convert_laserscan(Ros2ScanMsg & ros2_msg, const Ros1ScanMsg::ConstPtr & ros1_msg)
+{
+  ros2_msg.header.frame_id = ros1_msg->header.frame_id;
+  ros2_msg.angle_min = ros1_msg->angle_min;
+  ros2_msg.angle_max = ros1_msg->angle_max;
+  ros2_msg.angle_increment = ros1_msg->angle_increment;
+  ros2_msg.time_increment = ros1_msg->time_increment;
+  ros2_msg.scan_time = ros1_msg->scan_time;
+  ros2_msg.range_min = ros1_msg->range_min;
+  ros2_msg.range_max = ros1_msg->range_max;
+  ros2_msg.ranges = ros1_msg->ranges;
+  ros2_msg.intensities = ros1_msg->intensities;
+}
+
+}  // namespace
 
 //-----------------------------------------------------------------------------
 CamperoBridge::CamperoBridge(Ros1NodePtr ros1_node_ptr, Ros2NodePtr ros2_node_ptr)
@@ -123,6 +144,41 @@ void CamperoBridge::ros1_joint_states_callback_(const Ros1JointStatesMsg::ConstP
     ros2_node_ptr_->get_logger(), "ROS1: Received message from " << campero_joint_states_topic);
 }
 
+void CamperoBridge::ros1_joy_callback_(const Ros1JoyMsg::ConstPtr & ros1_msg)
+{
+  Ros2JoyMsg ros2_msg;
+  ros2_msg.header.stamp = ros2_node_ptr_->get_clock()->now();
+  ros2_msg.header.frame_id = ros1_msg->header.frame_id;
+  ros2_msg.axes = ros1_msg->axes;
+  ros2_msg.buttons = ros1_msg->buttons;
+  ros2_joy_pub_->publish(ros2_msg);
+
+  RCLCPP_INFO_STREAM_ONCE(
+    ros2_node_ptr_->get_logger(), "ROS1: Received message from " << campero_joy_topic);
+}
+
+void CamperoBridge::ros1_front_laser_callback_(const Ros1ScanMsg::ConstPtr & ros1_msg)
+{
+  Ros2ScanMsg ros2_msg;
+  ros2_msg.header.stamp = ros2_node_ptr_->get_clock()->now();
+  convert_laserscan(ros2_msg, ros1_msg);
+  ros2_front_laser_pub_->publish(ros2_msg);
+
+  RCLCPP_INFO_STREAM_ONCE(
+    ros2_node_ptr_->get_logger(), "ROS1: Received message from " << campero_front_laser_scan_topic);
+}
+
+void CamperoBridge::ros1_rear_laser_callback_(const Ros1ScanMsg::ConstPtr & ros1_msg)
+{
+  Ros2ScanMsg ros2_msg;
+  ros2_msg.header.stamp = ros2_node_ptr_->get_clock()->now();
+  convert_laserscan(ros2_msg, ros1_msg);
+  ros2_rear_laser_pub_->publish(ros2_msg);
+
+  RCLCPP_INFO_STREAM_ONCE(
+    ros2_node_ptr_->get_logger(), "ROS1: Received message from " << campero_rear_laser_scan_topic);
+}
+
 //-----------------------------------------------------------------------------
 void CamperoBridge::start()
 {
@@ -144,12 +200,28 @@ void CamperoBridge::init_ros2_publishers_()
   ros2_odom_pub_ = ros2_node_ptr_->create_publisher<Ros2OdomMsg>(bridge_odom_topic, data_qos);
   ros2_joint_states_pub_ =
     ros2_node_ptr_->create_publisher<Ros2JointStatesMsg>(bridge_joint_states_topic, data_qos);
+  ros2_joy_pub_ = ros2_node_ptr_->create_publisher<Ros2JoyMsg>(bridge_joy_topic, data_qos);
+  ros2_front_laser_pub_ =
+    ros2_node_ptr_->create_publisher<Ros2ScanMsg>(bridge_front_laser_scan_topic, data_qos);
+  ros2_rear_laser_pub_ =
+    ros2_node_ptr_->create_publisher<Ros2ScanMsg>(bridge_rear_laser_scan_topic, data_qos);
   RCLCPP_INFO_STREAM(
     ros2_node_ptr_->get_logger(),
     "Create pub 2 <- 1: " << bridge_odom_topic << " <- " << campero_odom_topic);
   RCLCPP_INFO_STREAM(
     ros2_node_ptr_->get_logger(),
     "Create pub 2 <- 1: " << bridge_joint_states_topic << " <- " << campero_joint_states_topic);
+  RCLCPP_INFO_STREAM(
+    ros2_node_ptr_->get_logger(),
+    "Create pub 2 <- 1: " << bridge_joy_topic << " <- " << campero_joy_topic);
+  RCLCPP_INFO_STREAM(
+    ros2_node_ptr_->get_logger(),
+    "Create pub 2 <- 1: " << bridge_front_laser_scan_topic << " <- "
+                          << campero_front_laser_scan_topic);
+  RCLCPP_INFO_STREAM(
+    ros2_node_ptr_->get_logger(),
+    "Create pub 2 <- 1: " << bridge_rear_laser_scan_topic << " <- "
+                          << campero_rear_laser_scan_topic);
 }
 
 //-----------------------------------------------------------------------------
@@ -159,6 +231,12 @@ void CamperoBridge::init_ros1_subscriptions_()
     campero_joint_states_topic, 10, &CamperoBridge::ros1_joint_states_callback_, this);
   ros1_odom_sub_ = ros1_node_ptr_->subscribe(
     campero_odom_topic, 10, &CamperoBridge::ros1_odometry_callback_, this);
+  ros1_joy_sub_ =
+    ros1_node_ptr_->subscribe(campero_joy_topic, 3, &CamperoBridge::ros1_joy_callback_, this);
+  ros1_front_laser_sub_ = ros1_node_ptr_->subscribe(
+    campero_front_laser_scan_topic, 3, &CamperoBridge::ros1_front_laser_callback_, this);
+  ros1_rear_laser_sub_ = ros1_node_ptr_->subscribe(
+    campero_rear_laser_scan_topic, 3, &CamperoBridge::ros1_rear_laser_callback_, this);
 }
 
 //-----------------------------------------------------------------------------

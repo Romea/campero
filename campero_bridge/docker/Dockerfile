@@ -27,13 +27,17 @@ RUN --mount=type=bind,source=package.xml,target=/tmp/bridge/package.xml \
 
 WORKDIR /bridge_ws
 
+# override entrypoint
+COPY docker/entrypoint.sh /ros_entrypoint.sh
+
+# debug
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gdbserver
+
 # compile this package (the bridge)
 RUN --mount=type=bind,source=.,target=/bridge_ws/src/bridge \
     ROS2_DISTRO=${ROS_DISTRO} \
     && . /opt/ros/one/setup.sh \
     && . /opt/ros/${ROS2_DISTRO}/local_setup.sh \
-    && ROS_VERSION=1 colcon --log-base /dev/null build \
+    && ROS_VERSION=1 colcon --log-base /dev/null build --cmake-args -DCMAKE_BUILD_TYPE=Debug \
     && rm -rf /bridge_ws/build
-
-# override entrypoint
-COPY docker/entrypoint.sh /ros_entrypoint.sh
