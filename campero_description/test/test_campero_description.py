@@ -12,52 +12,68 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-# import pytest
 import xml.etree.ElementTree as ET
-from campero_description import urdf
+
+from campero_description import (
+    generate_ros2_control_description,
+    generate_urdf_description,
+    get_configuration,
+)
 
 
 def urdf_xml(mode, model):
-    prefix = "robot_"
-    ros_prefix = "/robot/"
-    base_name = "base"
-    controller_conf_yaml_file = mode + "_" + model + "_controller.yaml"
-    # print(urdf(prefix, mode, model, controller_conf_yaml_file))
     return ET.fromstring(
-        urdf(prefix, mode, base_name, model, controller_conf_yaml_file, ros_prefix))
+        generate_urdf_description(
+            "robot_",
+            mode,
+            "base",
+            model,
+            f"{mode}_{model}_controller.yaml",
+            "/robot/",
+        )
+    )
 
 
-def ros2_control_urdf_xml(mode, model):
-    urdf_xml(mode, model)
-    return ET.parse("/tmp/robot_base_ros2_control.urdf")
+def ros2_control_xml(mode, model):
+    return ET.fromstring(
+        generate_ros2_control_description("robot_", mode, "base", model)
+    )
+
+
+def test_configuration_contains_campero_metadata():
+    configuration = get_configuration("rubber")
+
+    assert configuration["manufacturer"] == "sabi-agri"
+    assert configuration["model"] == "campero"
+    assert configuration["version"] == "rubber"
 
 
 def test_footprint_link_name():
     assert urdf_xml("live", "rubber").find("link").get("name") == "robot_base_footprint"
 
 
-def test_hardware_plugin_name():
-
-    assert ros2_control_urdf_xml("live", "rubber").find(
-        "ros2_control/hardware/plugin"
-    ).text == "campero_hardware/CamperoHardware4WD"
-
-    # assert urdf_xml("live", "mecanum").find(
-    #     "ros2_control/hardware/plugin"
-    # ).text == "campero_hardware/CamperoHardware4WMD"
-
-    assert ros2_control_urdf_xml("simulation", "rubber").find(
-        "ros2_control/hardware/plugin"
-    ).text == "romea_mobile_base_gazebo/GazeboSystemInterface4WD"
-
-    # assert urdf_xml("simulation", "mecanum").find(
-    #     "ros2_control/hardware/plugin"
-    # ).text == "romea_mobile_base_gazebo/GazeboSystemInterface4WMD"
-
-
-def test_controller_filename_name():
+def test_hardware_plugin_names():
     assert (
-        urdf_xml("simulation", "rubber").find("gazebo/plugin/controller_manager_config_file").text
-        == "simulation_rubber_controller.yaml"
+        ros2_control_xml("live", "rubber").find("ros2_control/hardware/plugin").text
+        == "campero_hardware/CamperoHardware4WD"
     )
+
+    assert (
+        ros2_control_xml("live", "mecanum").find("ros2_control/hardware/plugin").text
+        == "campero_hardware/CamperoHardware4WMD"
+    )
+
+    assert (
+        ros2_control_xml("simulation_gazebo", "rubber")
+        .find("ros2_control/hardware/plugin")
+        .text
+        == "romea_mobile_base_gazebo/GazeboSystemInterface4WD"
+    )
+
+
+def test_simulation_plugin_uses_ros2_control_description_node():
+    plugin = urdf_xml("simulation_gazebo", "rubber").find("gazebo/plugin")
+
+    assert plugin.find("robot_param").text == "robot_description"
+    assert plugin.find("robot_param_node").text == "ros2_control_description"
+    assert plugin.find("parameters").text == "simulation_gazebo_rubber_controller.yaml"

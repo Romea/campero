@@ -46,7 +46,7 @@
 
     <xacro:if value="${model == 'mecanum'}">
       <xacro:property name="simulation_hardware_plugin"
-        value="romea_mobile_base_gazebo/GazeboSystemInterface4WMD" />
+        value="romea_mobile_base_gazebo/GazeboSystemInterface4WD" />
       <xacro:property name="live_hardware_plugin"
         value="campero_hardware/CamperoHardware4WMD" />
     </xacro:if>

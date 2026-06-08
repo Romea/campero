@@ -6,7 +6,8 @@
             <!--            <origin xyz="${aabb_center_x-body_reference_x} ${aabb_center_y}
             ${aabb_center_z-chassis_height}" rpy="0 0 0" />-->
             <geometry>
-                <mesh filename="package://campero_description/meshes/chassis.stl" />
+                <!-- <mesh filename="package://campero_description/meshes/chassis.stl" /> -->
+                <mesh filename="file://$(find campero_description)/meshes/chassis.stl" />
             </geometry>
         </visual>
 

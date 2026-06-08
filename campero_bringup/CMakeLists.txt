@@ -17,12 +17,14 @@ install(
 ament_python_install_module(python/campero_bringup.py)
 
 install(PROGRAMS
-  scripts/urdf_description.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+  scripts/generate_configuration_file.py
+  scripts/generate_ros2_control_description.py
+  scripts/generate_urdf_description.py
+  DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  set(ament_cmake_flake8_CONFIG_FILE "${CMAKE_SOURCE_DIR}/../.flake8")
   list(APPEND AMENT_LINT_AUTO_EXCLUDE ament_cmake_copyright)
   ament_lint_auto_find_test_dependencies()
 

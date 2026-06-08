@@ -3,7 +3,7 @@
 <package format="3">
   <name>campero_hardware</name>
   <version>0.0.0</version>
-  <description>Package containgin campero hardware interface</description>
+  <description>Package containing Campero hardware interfaces.</description>
 
   <maintainer email="jean.laneurit@inrae.fr">Jean Laneurit</maintainer>
 

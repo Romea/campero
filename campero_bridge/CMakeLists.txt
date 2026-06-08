@@ -60,6 +60,6 @@ if(${ROS_VERSION} EQUAL 1)
       scripts/campero_bridge
       DESTINATION lib/${PROJECT_NAME})
 
-    ament_package()
+endif()
 
-endif()    
+ament_package()

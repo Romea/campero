@@ -17,17 +17,32 @@ from ament_index_python.packages import get_package_share_directory
 import campero_description
 
 
-def urdf_description(prefix, mode, base_name, model, ros_prefix):
+def get_configuration(robot_model):
+    return campero_description.get_configuration(robot_model)
+
+
+def generate_configuration_file(robot_model, extended):
+    configuration = get_configuration(robot_model)
+    return campero_description.generate_configuration_file(configuration, extended)
+
+
+def generate_ros2_control_description(prefix, mode, base_name, robot_model):
+    return campero_description.generate_ros2_control_description(
+        prefix, mode, base_name, robot_model
+    )
+
+
+def generate_urdf_description(prefix, mode, base_name, robot_model, ros_prefix):
 
     controller_manager_yaml_file = (
         get_package_share_directory("campero_bringup")
         + "/config/controller_manager.yaml"
     )
 
-    return campero_description.urdf(
+    return campero_description.generate_urdf_description(
         prefix,
         mode,
         base_name,
-        model,
+        robot_model,
         controller_manager_yaml_file,
         ros_prefix)
