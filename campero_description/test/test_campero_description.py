@@ -43,7 +43,7 @@ def ros2_control_xml(mode, model):
 def test_configuration_contains_campero_metadata():
     configuration = get_configuration("rubber")
 
-    assert configuration["manufacturer"] == "sabi-agri"
+    assert configuration["manufacturer"] == "robotonik"
     assert configuration["model"] == "campero"
     assert configuration["version"] == "rubber"
 
