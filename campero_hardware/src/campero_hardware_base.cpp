@@ -60,7 +60,7 @@ namespace ros2
 
 //-----------------------------------------------------------------------------
 CamperoHardwareBase::CamperoHardwareBase()
-: HardwareSystemInterface<HardwareInterface4WD>(),
+: HardwareSystemInterface4WD(),
   front_wheel_radius_(0),
   rear_wheel_radius_(0),
   front_left_wheel_angular_speed_measure_(0),

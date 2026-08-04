@@ -35,7 +35,7 @@ namespace romea
 namespace ros2
 {
 
-class CamperoHardwareBase : public HardwareSystemInterface<HardwareInterface4WD>
+class CamperoHardwareBase : public HardwareSystemInterface4WD
 {
 public:
 //  RCLCPP_SHARED_PTR_DEFINITIONS(CamperoHardwareBase);
