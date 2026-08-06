@@ -68,6 +68,23 @@ def test_hardware_plugin_names():
         == "campero_hardware/CamperoHardware4WMD"
     )
 
+    assert ros2_control_xml("simulation_gazebo", "rubber").find(
+        "ros2_control/hardware/plugin"
+    ).text == "romea_mobile_base_gazebo/GazeboSystemInterface"
+
+    assert ros2_control_xml("simulation_gazebo", "mecanum").find(
+        "ros2_control/hardware/plugin"
+    ).text == "romea_mobile_base_gazebo/GazeboSystemInterface"
+
+
+    assert ros2_control_xml("simulation_gazebo_classic", "rubber").find(
+        "ros2_control/hardware/plugin"
+    ).text == "romea_mobile_base_gazebo/GazeboSystemInterface4WD"
+
+    assert ros2_control_xml("simulation_gazebo_classic", "mecanum").find(
+        "ros2_control/hardware/plugin"
+    ).text == "romea_mobile_base_gazebo/GazeboSystemInterface4WMD"
+    
 
 def test_controller_filename_name():
     assert (
