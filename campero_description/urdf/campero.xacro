@@ -101,7 +101,9 @@
       <xacro:property name="chassis_height" value="${min(front_wheel_radius,rear_wheel_radius)}" />
 
       <xacro:chassis>
-         <xacro:chassis_visual />
+         <chassis_visuals>
+           <xacro:chassis_visual />
+         </chassis_visuals>
          <xacro:front_left_wheel_visual />
          <xacro:front_right_wheel_visual />
          <xacro:rear_left_wheel_visual />
