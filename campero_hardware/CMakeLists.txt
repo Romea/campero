@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(campero_hardware)
 
 # Default to C++14
@@ -37,30 +37,27 @@ add_library(
   src/campero_hardware4WMD.cpp
 )
 
-target_include_directories(
-  ${PROJECT_NAME}
-  PRIVATE
-  include
-)
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
 target_compile_definitions(
   ${PROJECT_NAME} 
   PUBLIC 
   ROS_DISTRO=${ROS_DISTRO})
 
-ament_target_dependencies(
-  ${PROJECT_NAME}
-  hardware_interface
-  pluginlib
-  rclcpp
-  rclcpp_lifecycle
-  romea_core_common
-  romea_core_mobile_base
-  romea_common_utils
-  romea_mobile_base_utils
-  romea_mobile_base_hardware
-  sensor_msgs
-  geometry_msgs
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  hardware_interface::hardware_interface
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_lifecycle::rclcpp_lifecycle
+  romea_core_common::romea_core_common
+  romea_core_mobile_base::romea_core_mobile_base
+  romea_common_utils::romea_common_utils
+  romea_mobile_base_utils::romea_mobile_base_utils
+  romea_mobile_base_hardware::romea_mobile_base_hardware
+  ${sensor_msgs_TARGETS}
+  ${geometry_msgs_TARGETS}
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -73,6 +70,7 @@ pluginlib_export_plugin_description_file(hardware_interface campero_hardware.xml
 # INSTALL
 install(
   TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   DESTINATION lib
 )
 
@@ -86,13 +84,15 @@ install(
 ##endif()
 
 ## EXPORTS
-ament_export_include_directories(
-  include
-)
+#ament_export_include_directories(
+#  include
+#)
 
-ament_export_libraries(
-  ${PROJECT_NAME}
-)
+#ament_export_libraries(
+#  ${PROJECT_NAME}
+#)
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_dependencies(ros2_socketcan)
 
 ament_export_dependencies(
   hardware_interface
