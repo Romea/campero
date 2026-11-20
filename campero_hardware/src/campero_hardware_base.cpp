@@ -88,11 +88,6 @@ CamperoHardwareBase::CamperoHardwareBase()
     "bridge/vehicle_controller/cmd_vel", sensor_data_qos());
   joint_states_sub_ = node_->create_subscription<sensor_msgs::msg::JointState>(
     "bridge/vehicle_controller/joint_states", best_effort(1), callback);
-
-  RCLCPP_INFO_STREAM(
-    rclcpp::get_logger("CamperoHardwareBase"), "logger name: " << node_->get_logger().get_name());
-  RCLCPP_INFO_STREAM(
-    rclcpp::get_logger("CamperoHardwareBase"), "logger dir: " << rclcpp::get_logging_directory());
 }
 
 //-----------------------------------------------------------------------------
@@ -149,12 +144,8 @@ void CamperoHardwareBase::send_null_command_()
 }
 
 //-----------------------------------------------------------------------------
-#if ROS_DISTRO == ROS_GALACTIC
-hardware_interface::return_type CamperoHardwareBase::read()
-#else
 hardware_interface::return_type CamperoHardwareBase::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
-#endif
 {
   //    RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Read data from robot");
   rclcpp::spin_some(node_);
@@ -172,12 +163,8 @@ hardware_interface::return_type CamperoHardwareBase::read(
 }
 
 //-----------------------------------------------------------------------------
-#if ROS_DISTRO == ROS_GALACTIC
-hardware_interface::return_type CamperoHardwareBase::write()
-#else
 hardware_interface::return_type CamperoHardwareBase::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
-#endif
 {
   //  RCLCPP_INFO(rclcpp::get_logger("CamperoHardwareBase"), "Send command to robot");
   get_hardware_command_();
@@ -220,9 +207,7 @@ void CamperoHardwareBase::get_hardware_command_()
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::open_log_file_()
 {
-  debug_file_.open(
-    (rclcpp::get_logging_directory() / "campero_control.csv").string(),
-    std::fstream::in | std::fstream::out | std::fstream::trunc);
+  debug_file_.open("campero.csv", std::fstream::in | std::fstream::out | std::fstream::trunc);
 }
 //-----------------------------------------------------------------------------
 void CamperoHardwareBase::write_log_header_()
